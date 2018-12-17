@@ -63,13 +63,20 @@ module MakeObservable = (M: TypeImpl) => {
     observable('e) =
     "pipe";
 
-  [@bs.module "./RxJs.js"]
-  external partition__:
-    (M.t('a), 'a => bool) => (observable('a), observable('a)) =
-    "pipePartition";
+  /* hack */
+  type partition__('a);
+  [@bs.module "rxjs/operators"]
+  external partition__: ('a => bool) => partition__('a) = "partition";
 
-  /* contain local import, partition__ should be private */
-  let partition = partition__;
+  /* hack */
+  [@bs.send]
+  external pipePartition__:
+    (M.t('a), partition__('a)) => (observable('a), observable('a)) =
+    "pipe";
+
+  let partition: (M.t('a), 'a => bool) => (observable('a), observable('a)) =
+    (self: M.t('a), f: 'a => bool) =>
+      self->pipePartition__(partition__(f));
 
   type subscribe_params('a) = {
     .
