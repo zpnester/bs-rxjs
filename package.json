@@ -1,0 +1,25 @@
+{
+  "name": "@zpnester/bs-rxjs",
+  "version": "0.0.0",
+  "author": {
+    "name": "Andriy Nesterenko",
+    "email": "zpnester@gmail.com",
+    "url": "https://github.com/zpnester"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zpnester/bs-rxjs.git"
+  },
+  "scripts": {
+    "bsb:clean": "bsb -clean-world",
+    "bsb:build": "bsb -make-world",
+    "bsb:watch": "bsb -make-world -w"
+  },
+  "dependencies": {
+    "rxjs": "^6.3.3"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^4.0.7"
+  }
+}
