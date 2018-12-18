@@ -63,12 +63,11 @@ module MakeObservable = (M: TypeImpl) => {
     observable('e) =
     "pipe";
 
-  /* hack */
+
   type partition__('a);
   [@bs.module "rxjs/operators"]
   external partition__: ('a => bool) => partition__('a) = "partition";
 
-  /* hack */
   [@bs.send]
   external pipePartition__:
     (M.t('a), partition__('a)) => (observable('a), observable('a)) =
@@ -238,6 +237,10 @@ module Observable = {
 
   [@bs.module "rxjs"]
   external throwError: error => observable('a) = "throwError";
+
+  
+  [@bs.send]
+  external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
 };
 
 module Operators = {
@@ -428,8 +431,6 @@ module Operators = {
   [@bs.module "rxjs/operators"]
   external timeout: int => operator('a, 'a) = "timeout";
 
-  [@bs.send]
-  external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
 };
 
 module MakeSubject = (M: TypeImpl) => {
