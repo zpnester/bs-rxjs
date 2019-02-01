@@ -1,23 +1,24 @@
 {
   "name": "@zpnester/bs-rxjs",
-  "version": "0.0.1",
-  "sources": [{
-    "dir" : "src",
-    "subdirs" : true
-  }, {
-    "dir": "test",
-    "type": "dev" 
-  }],
+  "version": "0.0.2",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "test",
+      "type": "dev"
+    }
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": [
-      
-  ],
+  "bs-dependencies": [],
   "warnings": {
-    "error" : "+101"
+    "error": "+101"
   },
   "refmt": 3
 }
