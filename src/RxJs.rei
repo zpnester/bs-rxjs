@@ -440,7 +440,7 @@ module Operators: {
   let elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a);
 
   let find:
-    (('a, int, observable('a)) => bool) => operator('a, Js.Undefined.t('a));
+    (('a, int, observable('a)) => bool) => operator('a, option('a));
 
   let findIndex: (('a, int, observable('a)) => bool) => operator('a, int);
 

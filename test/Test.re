@@ -1038,7 +1038,7 @@ of3("a", "b", "c")
       x == "b";
     }),
   )
-->subscribe(~next=x => expectToEqualAny(x, "b"), ());
+->subscribe(~next=x => expectToEqual(x, Some("b")), ());
 
 of3("a", "b", "c")
 ->pipe(
@@ -1048,7 +1048,7 @@ of3("a", "b", "c")
       false;
     }),
   )
-->subscribe(~next=x => expectToEqualAny(x, undef), ());
+->subscribe(~next=x => expectToEqual(x, None), ());
 
 of3("a", "b", "c")
 ->pipe(

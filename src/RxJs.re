@@ -777,11 +777,15 @@ module Operators = {
     "elementAt";
 
   [@bs.module "rxjs/operators"]
-  external find:
+  external find_:
     (('a, int, observable('a)) => bool) => operator('a, Js.Undefined.t('a)) =
     "find";
 
-  /* let find = Operator.make */
+  let find = (predicate: ('a, int, observable('a)) => bool) => {
+    Operator.make(src => {
+      src->Observable.pipe2(find_(predicate), map(Js.Undefined.toOption))
+    });
+  };
 
   [@bs.module "rxjs/operators"]
   external findIndex:
