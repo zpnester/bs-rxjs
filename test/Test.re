@@ -27,7 +27,7 @@ o1->subscribe(~next=x => expectToEqual(x, "from promise"), ());
 
 let o1 = Observable.fromArray([|1, 2, 3|]);
 o1
-->pipe(map((x, i) => (x + 10, i)))
+->pipe(mapi((x, i) => (x + 10, i)))
 ->pipe(toArray())
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|(11, 0), (12, 1), (13, 2)|]),
@@ -36,7 +36,7 @@ o1
 
 let o1 = Observable.fromArray([|1, 2, 3, 4|]);
 o1
-->pipe3(map((i, _) => i + 20), filter(i => i mod 2 == 0), toArray())
+->pipe3(map((i) => i + 20), filter(i => i mod 2 == 0), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|22, 24|]), ());
 
 let o1 = Observable.fromArray([|resolve("one"), resolve("two")|]);
@@ -499,11 +499,16 @@ let o1 =
   ->pipe(publishBehavior("q"));
 
 Js.Global.setTimeout(
-  () =>
-    o1
+  () => {
+    let s = o1
     ->ConnectableObservable.asConnectableObservable
     ->Belt.Option.getExn
-    ->ConnectableObservable.connect,
+    ->ConnectableObservable.connect
+
+
+    s->Subscription.unsubscribe;
+    expectToEqual(s->Js.typeof, "object");
+  },
   500,
 )
 |> ignore;
@@ -538,7 +543,8 @@ Js.Global.setTimeout(
     o1
     ->ConnectableObservable.asConnectableObservable
     ->Belt.Option.getExn
-    ->ConnectableObservable.connect,
+    ->ConnectableObservable.connect
+    ->ignore,
   500,
 )
 |> ignore;
@@ -571,7 +577,8 @@ Js.Global.setTimeout(
     o1
     ->ConnectableObservable.asConnectableObservable
     ->Belt.Option.getExn
-    ->ConnectableObservable.connect,
+    ->ConnectableObservable.connect
+    ->ignore,
   500,
 )
 |> ignore;
@@ -728,7 +735,7 @@ interval(500)
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, true), ());
 
 range(~start=1, ~count=20)
-->pipe3(single(x => x == 17), map((x, _) => x + 1), toArray())
+->pipe3(single(x => x == 17), map(x => x + 1), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|18|]), ());
 
 range(~start=1, ~count=20)
@@ -833,8 +840,8 @@ o3
 ->pipe2(exhaust(), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|1, 2, 3, 4, 5|]), ());
 
-let o1 = interval(10)->pipe2(map((x, _) => x->string_of_int), take(10));
-let o2 = interval(10)->pipe2(map((i, _) => {"i": i}), take(2));
+let o1 = interval(10)->pipe2(map(string_of_int), take(10));
+let o2 = interval(10)->pipe2(mapi((i, _) => {"i": i}), take(2));
 
 o1
 ->pipe(
@@ -1126,7 +1133,7 @@ let op1 =
 of3("a", "b", "c")
 ->pipe3(
     op1,
-    map((x, _) => {
+    mapi((x, _) => {
       Js.log(x);
       x ++ x;
     }),

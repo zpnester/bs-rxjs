@@ -224,11 +224,11 @@ module ConnectableObservable: {
   let asConnectableObservable:
     observable('a) => option(connectable_observable('a));
 
-  let connect: t('a) => unit;
+  let connect: t('a) => subscription;
 };
 
 module Operators: {
-  let map: (('a, int) => 'b) => operator('a, 'b);
+  let map: ('a => 'b) => operator('a, 'b);
 
   let mapi: (('a, int) => 'b) => operator('a, 'b);
 

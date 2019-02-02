@@ -396,12 +396,12 @@ module ConnectableObservable = {
       ->Js.Nullable.toOption
       ->Belt.Option.map(coFromJsonUnsafe__);
 
-  [@bs.send] external connect: t('a) => unit = "connect";
+  [@bs.send] external connect: t('a) => subscription = "connect";
 };
 
 module Operators = {
   [@bs.module "rxjs/operators"]
-  external map: (('a, int) => 'b) => operator('a, 'b) = "map";
+  external map: ('a => 'b) => operator('a, 'b) = "map";
 
   [@bs.module "rxjs/operators"]
   external mapi: (('a, int) => 'b) => operator('a, 'b) = "map";
