@@ -22,7 +22,11 @@ module Observer: {
   [@bs.send] external error: (t('a), 'e) => unit = "";
 };
 
-module Operator: {type t('a, 'b) = operator('a, 'b);};
+module Operator: {
+  type t('a, 'b) = operator('a, 'b);
+
+  let make: (observable('a) => observable('b)) => operator('a, 'b);
+};
 
 module Observable: {
   type t('a) = observable('a);
@@ -102,18 +106,22 @@ module Observable: {
     (
       t('a),
       ~next: 'a => unit=?,
-      ~error: 'e => unit=?,
+      ~error: Js.Json.t => unit=?,
       ~complete: unit => unit=?,
       unit
     ) =>
     subscription;
 
-  let create: (observer('a) => unit) => observable('a);
+  let create: ((observer('a), unit) => unit) => observable('a);
 
   let of1: 'a => observable('a);
   let of2: ('a, 'a) => observable('a);
   let of3: ('a, 'a, 'a) => observable('a);
   let of4: ('a, 'a, 'a, 'a) => observable('a);
+  let of5: ('a, 'a, 'a, 'a, 'a) => observable('a);
+  let of6: ('a, 'a, 'a, 'a, 'a, 'a) => observable('a);
+  let of7: ('a, 'a, 'a, 'a, 'a, 'a, 'a) => observable('a);
+  let of8: ('a, 'a, 'a, 'a, 'a, 'a, 'a, 'a) => observable('a);
 
   let race2: (observable('a), observable('a)) => observable('a);
   let race3:
@@ -267,20 +275,26 @@ module Operators: {
 
   let startWith4: ('a, 'a, 'a, 'a) => operator('a, 'a);
 
+  let endWith: 'a => operator('a, 'a);
+
+  let endWith2: ('a, 'a) => operator('a, 'a);
+
+  let endWith3: ('a, 'a, 'a) => operator('a, 'a);
+
+  let endWith4: ('a, 'a, 'a, 'a) => operator('a, 'a);
+
   let pairwise: unit => operator('a, ('a, 'a));
 
   let withLatestFrom: observable('b) => operator('a, ('a, 'b));
 
   let every: ('a => bool) => operator('a, bool);
 
-  let catch: (Js.Json.t => observable('a)) => operator('a, 'a);
+  let catchError: (Js.Json.t => observable('a)) => operator('a, 'a);
 
   let retry: int => operator('a, 'a);
 
   let retryWhen:
     (observable(Js.Json.t) => observable('b)) => operator('a, 'a);
-
-  let distinctUntilChanged: unit => operator('a, 'a);
 
   let first: unit => operator('a, 'a);
 
@@ -374,6 +388,10 @@ module Operators: {
   let timeout:
     [ | `Int(int) | `Float(float) | `Date(Js.Date.t)] => operator('a, 'a);
 
+  let timeoutWith:
+    ([ | `Int(int) | `Float(float) | `Date(Js.Date.t)], observable('a)) =>
+    operator('a, 'a);
+
   let combineAll: unit => operator(observable('a), array('a));
 
   let defaultIfEmpty: 'a => operator('a, 'a);
@@ -390,6 +408,13 @@ module Operators: {
     (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a);
 
   let publish: unit => operator('a, 'a);
+
+  let publishBehavior: 'a => operator('a, 'a);
+
+  let publishLast: unit => operator('a, 'a);
+
+  let publishReplay:
+    (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a);
 
   let audit: ('a => observable('b)) => operator('a, 'a);
 
@@ -411,22 +436,50 @@ module Operators: {
       unit
     ) =>
     operator('a, 'c);
+
+  let elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a);
+
+  let find:
+    (('a, int, observable('a)) => bool) => operator('a, Js.Undefined.t('a));
+
+  let findIndex: (('a, int, observable('a)) => bool) => operator('a, int);
+
+  let isEmpty: unit => operator('a, bool);
+
+  let max: (('a, 'a) => float) => operator('a, 'a);
+  let min: (('a, 'a) => float) => operator('a, 'a);
+
+  let switchAll: unit => operator(observable('a), 'a);
+
+  let onErrorResumeNext: array(observable('a)) => operator('a, 'a);
+
+  let refCount: unit => operator('a, 'a);
+
+  let throwIfEmpty: (~errorFactory: unit => unit=?, unit) => operator('a, 'a);
+
+  let timestamp:
+    unit =>
+    operator(
+      'a,
+      {
+        .
+        "timestamp": float,
+        "value": 'a,
+      },
+    );
+
+  let distinctUntilChanged:
+    (~compare: ('a, 'a) => bool=?, unit) => operator('a, 'a);
 };
 
 module Subject: {
   type t('a) = subject('a);
 
   let asObservable: t('a) => observable('a);
-
   let asObserver: t('a) => observer('a);
-
-  [@bs.send] external next: (t('a), 'a) => unit = "";
-  [@bs.send] external complete: t('a) => unit = "";
-  [@bs.send] external error: (t('a), 'e) => unit = "";
+  let asSubject: observable('a) => option(subject('a));
 
   let make: unit => subject('a);
-
-  let asSubject: observable('a) => option(subject('a));
 };
 
 module AsyncSubject: {
@@ -435,63 +488,40 @@ module AsyncSubject: {
   let asObservable: t('a) => observable('a);
 
   let asObserver: t('a) => observer('a);
-
-  [@bs.send] external next: (t('a), 'a) => unit = "";
-  [@bs.send] external complete: t('a) => unit = "";
-  [@bs.send] external error: (t('a), 'e) => unit = "";
+  let asSubject: t('a) => subject('a);
 
   let make: unit => async_subject('a);
-
-  let asSubject: t('a) => subject('a);
 };
 
 module BehaviorSubject: {
   type t('a) = behavior_subject('a);
 
   let asObservable: t('a) => observable('a);
-
   let asObserver: t('a) => observer('a);
-
-  [@bs.send] external next: (t('a), 'a) => unit = "";
-  [@bs.send] external complete: t('a) => unit = "";
-  [@bs.send] external error: (t('a), 'e) => unit = "";
+  let asSubject: t('a) => subject('a);
 
   let make: 'a => behavior_subject('a);
 
   let getValue: behavior_subject('a) => 'a;
-
-  let asSubject: t('a) => subject('a);
 };
 
 module ReplaySubject: {
   type t('a) = replay_subject('a);
 
   let asObservable: t('a) => observable('a);
-
   let asObserver: t('a) => observer('a);
-
-  [@bs.send] external next: (t('a), 'a) => unit = "";
-  [@bs.send] external complete: t('a) => unit = "";
-  [@bs.send] external error: (t('a), 'e) => unit = "";
+  let asSubject: t('a) => subject('a);
 
   let make:
     (~bufferSize: int=?, ~windowTime: int=?, unit) => replay_subject('a);
-
-    let asSubject: t('a) => subject('a);
 };
 
 module WebSocketSubject: {
   type t('a) = websocket_subject('a);
 
   let asObservable: t('a) => observable('a);
-
   let asObserver: t('a) => observer('a);
-
-  [@bs.send] external next: (t('a), 'a) => unit = "";
-  [@bs.send] external complete: t('a) => unit = "";
-  [@bs.send] external error: (t('a), 'e) => unit = "";
+  let asSubject: t('a) => subject('a);
 
   let make: (~url: string) => websocket_subject(Js.Json.t);
-
-  let asSubject: t('a) => subject('a);
 };

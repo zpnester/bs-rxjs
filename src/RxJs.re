@@ -25,8 +25,6 @@ module ObserverOps = (M: TypeImpl) => {
 
 module MakeObserver = (M: TypeImpl) => {
   external asObserver: M.t('a) => observer('a) = "%identity";
-
-  include ObserverOps(M);
 };
 
 module Observer = {
@@ -39,6 +37,9 @@ module Observer = {
 
 module Operator = {
   type t('a, 'b) = operator('a, 'b);
+
+  external make: (observable('a) => observable('b)) => operator('a, 'b) =
+    "%identity";
 };
 
 module MakeObservable = (M: TypeImpl) => {
@@ -149,22 +150,22 @@ module ObservableOps = (M: TypeImpl) => {
       : (observable('a), observable('a)) =>
     self->pipePartition__(partition__(predicate));
 
-  type subscribe_params('a, 'e) = {
+  type subscribe_params('a) = {
     .
     "next": Js.Nullable.t('a => unit),
-    "error": Js.Nullable.t('e => unit),
+    "error": Js.Nullable.t(Js.Json.t => unit),
     "complete": Js.Nullable.t(unit => unit),
   };
 
   [@bs.send]
-  external subscribe_: (M.t('a), subscribe_params('a, 'e)) => subscription =
+  external subscribe_: (M.t('a), subscribe_params('a)) => subscription =
     "subscribe";
 
   let subscribe =
       (
         self: M.t('a),
         ~next: option('a => unit)=?,
-        ~error: option('e => unit)=?,
+        ~error: option(Js.Json.t => unit)=?,
         ~complete: option(unit => unit)=?,
         (),
       ) => {
@@ -185,12 +186,21 @@ module Observable = {
   });
 
   [@bs.module "rxjs"] [@bs.scope "Observable"]
-  external create: (observer('a) => unit) => observable('a) = "create";
+  external create: ((observer('a), unit) => unit) => observable('a) =
+    "create";
 
   [@bs.module "rxjs"] external of1: 'a => observable('a) = "of";
   [@bs.module "rxjs"] external of2: ('a, 'a) => observable('a) = "of";
   [@bs.module "rxjs"] external of3: ('a, 'a, 'a) => observable('a) = "of";
   [@bs.module "rxjs"] external of4: ('a, 'a, 'a, 'a) => observable('a) = "of";
+  [@bs.module "rxjs"]
+  external of5: ('a, 'a, 'a, 'a, 'a) => observable('a) = "of";
+  [@bs.module "rxjs"]
+  external of6: ('a, 'a, 'a, 'a, 'a, 'a) => observable('a) = "of";
+  [@bs.module "rxjs"]
+  external of7: ('a, 'a, 'a, 'a, 'a, 'a, 'a) => observable('a) = "of";
+  [@bs.module "rxjs"]
+  external of8: ('a, 'a, 'a, 'a, 'a, 'a, 'a, 'a) => observable('a) = "of";
 
   [@bs.module "rxjs"]
   external race2: (observable('a), observable('a)) => observable('a) =
@@ -365,16 +375,11 @@ module ConnectableObservable = {
   external coFromJsonUnsafe__: Js.Json.t => connectable_observable('a) =
     "%identity";
 
+  /* instanceof won't work, pipe returns observable with connect method, not real instance of ConnectableObservable */
   let asConnectableObservable_:
     (Js.Json.t, Js.Json.t) => Js.Nullable.t(Js.Json.t) = [%raw
     {|
   function(o, c) {
-    /* if (o instanceof c) {
-      return o;
-    } else {
-      return null;
-    } */
-
     if (o.connect && o.getSubject) {
       return o;
     } else {
@@ -474,6 +479,18 @@ module Operators = {
   external startWith4: ('a, 'a, 'a, 'a) => operator('a, 'a) = "startWith";
 
   [@bs.module "rxjs/operators"]
+  external endWith: 'a => operator('a, 'a) = "endWith";
+
+  [@bs.module "rxjs/operators"]
+  external endWith2: ('a, 'a) => operator('a, 'a) = "endWith";
+
+  [@bs.module "rxjs/operators"]
+  external endWith3: ('a, 'a, 'a) => operator('a, 'a) = "endWith";
+
+  [@bs.module "rxjs/operators"]
+  external endWith4: ('a, 'a, 'a, 'a) => operator('a, 'a) = "endWith";
+
+  [@bs.module "rxjs/operators"]
   external pairwise: unit => operator('a, ('a, 'a)) = "pairwise";
 
   [@bs.module "rxjs/operators"]
@@ -484,7 +501,7 @@ module Operators = {
   external every: ('a => bool) => operator('a, bool) = "every";
 
   [@bs.module "rxjs/operators"]
-  external catch: (Js.Json.t => observable('a)) => operator('a, 'a) =
+  external catchError: (Js.Json.t => observable('a)) => operator('a, 'a) =
     "catchError";
 
   [@bs.module "rxjs/operators"]
@@ -495,10 +512,6 @@ module Operators = {
   external retryWhen:
     (observable(Js.Json.t) => observable('b)) => operator('a, 'a) =
     "retryWhen";
-
-  [@bs.module "rxjs/operators"]
-  external distinctUntilChanged: unit => operator('a, 'a) =
-    "distinctUntilChanged";
 
   [@bs.module "rxjs/operators"]
   external first: unit => operator('a, 'a) = "first";
@@ -651,7 +664,7 @@ module Operators = {
     "tap";
 
   /* TODO Notification */
-  /* TODO dematerialize  */
+  /* dematerialize skipped, Notification impl required */
 
   [@bs.module "rxjs/operators"]
   external finalize: (unit => unit) => operator('a, 'a) = "finalize";
@@ -665,8 +678,24 @@ module Operators = {
     operator('a, 'a) =
     "timeout";
 
-  let timeout = (d: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
-    timeout_(d);
+  let timeout = (due: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
+    timeout_(due);
+
+  [@bs.module "rxjs/operators"]
+  external timeoutWith_:
+    (
+      [@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)],
+      observable('a)
+    ) =>
+    operator('a, 'a) =
+    "timeoutWith";
+
+  let timeoutWith =
+      (
+        due: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)],
+        withObservable: observable('a),
+      ) =>
+    timeoutWith_(due, withObservable);
 
   [@bs.module "rxjs/operators"]
   external combineAll: unit => operator(observable('a), array('a)) =
@@ -692,7 +721,8 @@ module Operators = {
       (s: [ | `Subject(subject('a)) | `Factory(unit => subject('a))]) =>
     multicast_(s);
 
-  [@bs.module "rxjs/operators"] external share: unit => 'a = "share";
+  [@bs.module "rxjs/operators"]
+  external share: unit => operator('a, 'a) = "share";
 
   [@bs.module "rxjs/operators"]
   external shareReplay:
@@ -702,6 +732,18 @@ module Operators = {
   /* TODO selector */
   [@bs.module "rxjs/operators"]
   external publish: unit => operator('a, 'a) = "publish";
+
+  [@bs.module "rxjs/operators"]
+  external publishBehavior: 'a => operator('a, 'a) = "publishBehavior";
+
+  [@bs.module "rxjs/operators"]
+  external publishLast: unit => operator('a, 'a) = "publishLast";
+
+  /* TODO selector */
+  [@bs.module "rxjs/operators"]
+  external publishReplay:
+    (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a) =
+    "publishReplay";
 
   /* 'b not used */
   [@bs.module "rxjs/operators"]
@@ -729,6 +771,66 @@ module Operators = {
     ) =>
     operator('a, 'c) =
     "exhaustMap";
+
+  [@bs.module "rxjs/operators"]
+  external elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a) =
+    "elementAt";
+
+  [@bs.module "rxjs/operators"]
+  external find:
+    (('a, int, observable('a)) => bool) => operator('a, Js.Undefined.t('a)) =
+    "find";
+
+  /* let find = Operator.make */
+
+  [@bs.module "rxjs/operators"]
+  external findIndex:
+    (('a, int, observable('a)) => bool) => operator('a, int) =
+    "findIndex";
+
+  [@bs.module "rxjs/operators"]
+  external isEmpty: unit => operator('a, bool) = "isEmpty";
+
+  [@bs.module "rxjs/operators"]
+  external max: (('a, 'a) => float) => operator('a, 'a) = "max";
+
+  [@bs.module "rxjs/operators"]
+  external min: (('a, 'a) => float) => operator('a, 'a) = "min";
+
+  [@bs.module "rxjs/operators"]
+  external switchAll: unit => operator(observable('a), 'a) = "switchAll";
+
+  [@bs.module "rxjs/operators"]
+  external onErrorResumeNext: array(observable('a)) => operator('a, 'a) =
+    "onErrorResumeNext";
+
+  [@bs.module "rxjs/operators"]
+  external refCount: unit => operator('a, 'a) = "refCount";
+
+  [@bs.module "rxjs/operators"]
+  external throwIfEmpty:
+    (~errorFactory: unit => unit=?, unit) => operator('a, 'a) =
+    "throwIfEmpty";
+
+  [@bs.module "rxjs/operators"]
+  external timestamp:
+    unit =>
+    operator(
+      'a,
+      {
+        .
+        "timestamp": float,
+        "value": 'a,
+      },
+    ) =
+    "timestamp";
+
+  /* keySelector skipped for type safety */
+  [@bs.module "rxjs/operators"]
+  external distinctUntilChanged:
+    (~compare: ('a, 'a) => bool=?, unit) => operator('a, 'a) =
+    "distinctUntilChanged";
+  /* distinctUntilKeyChanged skipped for type safety */
 };
 
 module MakeSubject = (M: TypeImpl) => {

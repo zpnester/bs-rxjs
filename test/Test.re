@@ -2,6 +2,7 @@ open RxJs;
 open Observable;
 open Js.Promise;
 open Operators;
+open Observer;
 open Expect_;
 
 let o1 = Observable.fromArray([|1, 2, 3, 4, 5, 6|]);
@@ -110,7 +111,9 @@ o1->subscribe(
 
 o1
 ->pipe2(
-    Operators.catch(x => of1("caught " ++ x->Js.Json.decodeString->Belt.Option.getExn)),
+    Operators.catchError(x =>
+      of1("caught " ++ x->Js.Json.decodeString->Belt.Option.getExn)
+    ),
     toArray(),
   )
 ->subscribe(
@@ -279,24 +282,23 @@ of2(2, 3)
 ->subscribe(~next=x => expectToEqual(x, [|2, 3, 2, 3|]), ());
 
 let o1 = ReplaySubject.make(~bufferSize=5, ~windowTime=1000, ());
-o1->ReplaySubject.next("a");
-o1->ReplaySubject.next("b");
+let o2 = o1->ReplaySubject.asObservable;
 
-/* Js.Global.setTimeout(() => { */
-o1->ReplaySubject.asSubject->Subject.next("c");
-o1->ReplaySubject.complete;
-/* }, 1500); */
+let o1 = o1->ReplaySubject.asObserver;
+o1->next("a");
+o1->next("b");
+
+o1->next("c");
+o1->complete;
 
 Js.Global.setTimeout(
   () =>
-    o1
-    ->ReplaySubject.asObservable
+    o2
     ->pipe(toArray())
     ->subscribe(~next=x => expectToEqual(x, [|"a", "b", "c"|]), ())
     |> ignore,
   500,
 );
-
 
 Observable.empty->subscribe(
   ~next=_ => failwith("fail"),
@@ -358,20 +360,21 @@ fromArray([|4, 5, 6|])
 ->pipe(sequenceEqual(o1))
 ->subscribe(~next=x => expectToEqual(x, true), ());
 
-create(obs => {
-    obs->Observer.next("q");
-    Js.Global.setTimeout(
-      () => {
-        obs->Observer.next("a");
-        obs->Observer.next("z");
-        obs->Observer.complete;
-      },
-      500,
-    )
-    |> ignore;
-  })
-  ->pipe(toArray())
-  ->subscribe(~next=arr => expectToEqual(arr, [|"q", "a", "z"|]), ());
+Observable.create(obs => {
+  obs->Observer.next("q");
+  Js.Global.setTimeout(
+    () => {
+      obs->Observer.next("a");
+      obs->Observer.next("z");
+      obs->Observer.complete;
+    },
+    500,
+  )
+  |> ignore;
+  () => ();
+})
+->pipe(toArray())
+->subscribe(~next=arr => expectToEqual(arr, [|"q", "a", "z"|]), ());
 
 let makeEventTarget: unit => (Dom.eventTarget, string => unit) = [%raw
   {|
@@ -417,14 +420,15 @@ o1
 /* bad test */
 let i1 = ref(0);
 let o2 =
-  Observable.create(obs =>
+  Observable.create(obs => {
     if (i1^ == 0) {
       i1 := 1;
       failwith("f");
     } else {
       obs->Observer.next("d");
-    }
-  );
+    };
+    () => ();
+  });
 let o1 = of3("a", "b", "c");
 let o3 = of1("e");
 concat3(o1, o2, o3)
@@ -443,7 +447,7 @@ concat3(o1, o2, o3)
   );
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -456,8 +460,111 @@ let o1 =
       500,
     )
     |> ignore;
+    () => ();
   })
-  ->pipe(publish());
+  ->pipe2(publish(), refCount());
+
+/* DO NOT DELETE, connect required without refCount */
+
+/* Js.Global.setTimeout(
+     () =>
+       o1
+       ->ConnectableObservable.asConnectableObservable
+       ->Belt.Option.getExn
+       ->ConnectableObservable.connect,
+     500,
+   )
+   |> ignore; */
+
+o1
+->pipe(toArray())
+->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
+
+let o1 =
+  Observable.create(obs => {
+    obs->Observer.next("a");
+    obs->Observer.next("b");
+
+    Js.Global.setTimeout(
+      () => {
+        obs->Observer.next("c");
+        obs->Observer.next("d");
+        obs->Observer.complete;
+      },
+      500,
+    )
+    |> ignore;
+    () => ();
+  })
+  ->pipe(publishBehavior("q"));
+
+Js.Global.setTimeout(
+  () =>
+    o1
+    ->ConnectableObservable.asConnectableObservable
+    ->Belt.Option.getExn
+    ->ConnectableObservable.connect,
+  500,
+)
+|> ignore;
+
+o1
+->pipe(toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr, [|"q", "a", "b", "c", "d"|]),
+    (),
+  );
+
+let o1 =
+  Observable.create(obs => {
+    obs->Observer.next("a");
+    obs->Observer.next("b");
+
+    Js.Global.setTimeout(
+      () => {
+        obs->Observer.next("c");
+        obs->Observer.next("d");
+        obs->Observer.complete;
+      },
+      500,
+    )
+    |> ignore;
+    () => ();
+  })
+  ->pipe(publishLast());
+
+Js.Global.setTimeout(
+  () =>
+    o1
+    ->ConnectableObservable.asConnectableObservable
+    ->Belt.Option.getExn
+    ->ConnectableObservable.connect,
+  500,
+)
+|> ignore;
+
+o1
+->pipe(toArray())
+->subscribe(~next=arr => expectToEqual(arr, [|"d"|]), ());
+
+/* test does not verify that params are working (bufferSize and windowTime) */
+let o1 =
+  Observable.create(obs => {
+    obs->Observer.next("a");
+    obs->Observer.next("b");
+
+    Js.Global.setTimeout(
+      () => {
+        obs->Observer.next("c");
+        obs->Observer.next("d");
+        obs->Observer.complete;
+      },
+      500,
+    )
+    |> ignore;
+    () => ();
+  })
+  ->pipe(publishReplay(~bufferSize=1, ()));
 
 Js.Global.setTimeout(
   () =>
@@ -476,7 +583,7 @@ o1
 let s1 = Subject.make();
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -489,6 +596,7 @@ let o1 =
       500,
     )
     |> ignore;
+    () => ();
   })
   ->pipe(multicast(`Subject(s1)));
 
@@ -511,7 +619,7 @@ o1
 ->subscribe(~next=arr => expectToEqual(arr, [|"c", "d"|]), ());
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -524,6 +632,7 @@ let o1 =
       500,
     )
     |> ignore;
+    () => ();
   })
   ->pipe(share());
 
@@ -531,7 +640,7 @@ o1
 ->pipe(toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
 
-create(obs => {
+Observable.create(obs => {
   obs->Observer.next("a");
   obs->Observer.next("b");
 
@@ -544,6 +653,7 @@ create(obs => {
     500,
   )
   |> ignore;
+  () => ();
 })
 ->pipe2(shareReplay(~bufferSize=3, ()), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
@@ -558,7 +668,7 @@ interval(50)
 ->pipe3(auditTime(100), take(10), toArray())
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 5, true), ());
 
-create(obs => {
+Observable.create(obs => {
   obs->Observer.next(1);
   obs->Observer.next(2);
   Js.Global.setTimeout(
@@ -569,11 +679,12 @@ create(obs => {
     50,
   )
   |> ignore;
+  () => ();
 })
 ->pipe3(debounce(() => timer(~delay=`Int(100), ())), take(1), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|3|]), ());
 
-create(obs => {
+Observable.create(obs => {
   obs->Observer.next(1);
   obs->Observer.next(2);
   Js.Global.setTimeout(
@@ -584,6 +695,7 @@ create(obs => {
     50,
   )
   |> ignore;
+  () => ();
 })
 ->pipe3(debounceTime(100), take(1), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|3|]), ());
@@ -668,7 +780,7 @@ interval(220)
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length >= 4, true), ());
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     let t = interval(100)->subscribe(~next=i => obs->Observer.next(i), ());
 
     Js.Global.setTimeout(
@@ -679,6 +791,7 @@ let o1 =
       1000,
     )
     |> ignore;
+    () => ();
   });
 
 o1
@@ -695,7 +808,7 @@ o1
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, true), ());
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     let t = interval(500)->subscribe(~next=i => obs->Observer.next(i), ());
 
     Js.Global.setTimeout(
@@ -706,6 +819,7 @@ let o1 =
       1000,
     )
     |> ignore;
+    () => ();
   });
 
 interval(50)
@@ -835,7 +949,7 @@ o1
   );
 
 let o1 =
-  create(obs => {
+  Observable.create(obs => {
     let t = interval(100)->subscribe(~next=i => obs->Observer.next(i), ());
 
     Js.Global.setTimeout(
@@ -846,6 +960,7 @@ let o1 =
       1000,
     )
     |> ignore;
+    () => ();
   });
 
 o1
@@ -863,10 +978,7 @@ o1
       o =>
         o
         ->pipe2(take(10), toArray())
-        ->subscribe(
-            ~next=x => expectToEqual(x->Js.Array.length >= 1, true),
-            (),
-          )
+        ->subscribe(~next=x => expectToEqual(x->Js.Array.isArray, true), ())
         |> ignore,
     (),
   );
@@ -878,10 +990,7 @@ interval(20)
       o =>
         o
         ->pipe2(take(10), toArray())
-        ->subscribe(
-            ~next=x => expectToEqual(x->Js.Array.length >= 1, true),
-            (),
-          )
+        ->subscribe(~next=x => expectToEqual(x->Js.Array.isArray, true), ())
         |> ignore,
     (),
   );
@@ -898,3 +1007,222 @@ of1("del")
 of1("a")
 ->pipe(timeout(`Int(5)))
 ->subscribe(~next=x => expectToEqual(x, "a"), ());
+
+of2("a", "b")
+->pipe(elementAt(1, ()))
+->subscribe(~next=x => expectToEqual(x, "b"), ());
+
+of2("a", "b")
+->pipe(elementAt(2, ~defaultValue="y", ()))
+->subscribe(~next=x => expectToEqual(x, "y"), ());
+
+of2("b", "c")
+->pipe3(endWith4("d", "e", "f", "g"), startWith2("_", "a"), toArray())
+->subscribe(
+    ~next=x => expectToEqual(x, [|"_", "a", "b", "c", "d", "e", "f", "g"|]),
+    (),
+  );
+
+of3("a", "b", "c")
+->pipe(
+    find((x, i, o) => {
+      expectToEqual(i->Js.typeof, "number");
+      expectToEqual(o->Js.typeof, "object");
+      x == "b";
+    }),
+  )
+->subscribe(~next=x => expectToEqualAny(x, "b"), ());
+
+of3("a", "b", "c")
+->pipe(
+    find((_, i, o) => {
+      expectToEqual(i->Js.typeof, "number");
+      expectToEqual(o->Js.typeof, "object");
+      false;
+    }),
+  )
+->subscribe(~next=x => expectToEqualAny(x, undef), ());
+
+of3("a", "b", "c")
+->pipe(
+    findIndex((x, i, o) => {
+      expectToEqual(i->Js.typeof, "number");
+      expectToEqual(o->Js.typeof, "object");
+      x == "b";
+    }),
+  )
+->subscribe(~next=x => expectToEqual(x, 1), ());
+
+of3("a", "b", "c")
+->pipe(
+    findIndex((_, i, o) => {
+      expectToEqual(i->Js.typeof, "number");
+      expectToEqual(o->Js.typeof, "object");
+      false;
+    }),
+  )
+->subscribe(~next=x => expectToEqual(x, -1), ());
+
+of1("a")
+->pipe(isEmpty())
+->subscribe(~next=x => expectToEqual(x, false), ());
+
+empty->pipe(isEmpty())->subscribe(~next=x => expectToEqual(x, true), ());
+
+of3(1, 2, 3)
+->pipe(max((a, b) => a - b |> float_of_int))
+->subscribe(~next=x => expectToEqual(x, 3), ());
+
+of3(1, 4, 3)
+->pipe(max((a, b) => a - b |> float_of_int))
+->subscribe(~next=x => expectToEqual(x, 4), ());
+
+of3(1, 4, 3)
+->pipe(min((a, b) => a - b |> float_of_int))
+->subscribe(~next=x => expectToEqual(x, 1), ());
+
+let o1 = of2("a", "b");
+let o2 = of3("c", "d", "e");
+of2(o1, o2)
+->pipe2(switchAll(), toArray())
+->subscribe(~next=x => expectToEqual(x, [|"a", "b", "c", "d", "e"|]), ());
+
+let o1 = of2("a", "b");
+let o2: observable(string) = throwError("err");
+let o3 = of3("c", "d", "e");
+o1
+->pipe(onErrorResumeNext([|o2, o3|]))
+->pipe(toArray())
+->subscribe(~next=x => expectToEqual(x, [|"a", "b", "c", "d", "e"|]), ());
+
+let op1 =
+  Operator.make(src =>
+    Observable.create(obs => {
+      let s =
+        src->subscribe(
+          ~next=
+            x => {
+              Js.log2("xxxxxxx", x);
+              obs->Observer.next(x ++ "!");
+            },
+          ~error=
+            e => {
+              Js.log("src err");
+
+              obs->Observer.error(e);
+            },
+          ~complete=
+            () => {
+              Js.log("src complete");
+              obs->Observer.complete;
+            },
+          (),
+        );
+
+      () => s->Subscription.unsubscribe;
+    })
+  );
+
+of3("a", "b", "c")
+->pipe3(
+    op1,
+    map((x, _) => {
+      Js.log(x);
+      x ++ x;
+    }),
+    toArray(),
+  )
+->subscribe(~next=x => expectToEqual(x, [|"a!a!", "b!b!", "c!c!"|]), ());
+
+let o1 =
+  Observable.create(obs => {
+    obs->Observer.next("a");
+    () => Js.log("teardown OK");
+  });
+let s = o1->subscribe();
+s->Subscription.unsubscribe;
+
+expectToEqual(
+  empty->ConnectableObservable.asConnectableObservable->Belt.Option.isSome,
+  false,
+);
+
+of2("a", "b")
+->pipe2(refCount(), toArray())
+->subscribe(~next=x => expectToEqual(x, [|"a", "b"|]), ());
+
+empty
+->pipe2(
+    throwIfEmpty(~errorFactory=() => failwith("custom err"), ()),
+    catchError(err => {
+      expectToEqualAny(err, Failure("custom err"));
+      of1("x");
+    }),
+  )
+->subscribe(~next=x => expectToEqual(x, "x"), ());
+
+/* empty does not work */
+create((_, ()) => ())
+->pipe(timeoutWith(`Int(100), of1("a")))
+->subscribe(
+    ~next=x => expectToEqual(x, "a"),
+    ~error=_ => failwith("fail"),
+    (),
+  );
+
+of1("a")
+->pipe(timestamp())
+->subscribe(
+    ~next=
+      x => {
+        Js.log(x);
+        expectToEqual(x##value, "a");
+        expectToEqual(x##timestamp->Js.typeof, "number");
+      },
+    (),
+  );
+
+of6("a", "a", "b", "b", "b", "c")
+->pipe2(
+    distinctUntilChanged(
+      ~compare=
+        (a, b) =>
+          if (a == "a") {
+            false;
+          } else {
+            a == b;
+          },
+      (),
+    ),
+    toArray(),
+  )
+->subscribe(~next=x => expectToEqual(x, [|"a", "a", "b", "c"|]), ());
+
+/* README */
+let observable =
+  Observable.create(observer => {
+    open Observer;
+
+    observer->next(1);
+    observer->next(2);
+    observer->next(3);
+
+    Js.Global.setTimeout(
+      () => {
+        observer->next(4);
+        observer->complete;
+      },
+      1000,
+    )
+    |> ignore;
+
+    () => /* teardown logic */ ();
+  });
+
+observable->Observable.subscribe(
+  ~next=x => Js.log2("got value", x),
+  ~error=err => Js.log2("something wrong occurred", err),
+  ~complete=() => Js.log("done"),
+  (),
+);
+/* END OF README */
