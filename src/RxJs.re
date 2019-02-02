@@ -493,9 +493,24 @@ module Operators = {
   [@bs.module "rxjs/operators"]
   external pairwise: unit => operator('a, ('a, 'a)) = "pairwise";
 
+
   [@bs.module "rxjs/operators"]
   external withLatestFrom: observable('b) => operator('a, ('a, 'b)) =
     "withLatestFrom";
+
+  [@bs.module "rxjs/operators"]
+  external withLatestFrom2: (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) =
+    "withLatestFrom";
+
+   [@bs.module "rxjs/operators"]
+  external withLatestFrom3: (observable('b), observable('c), observable('d)) => operator('a, ('a, 'b, 'c, 'd)) =
+    "withLatestFrom";
+
+     [@bs.module "rxjs/operators"]
+  external withLatestFrom4: (observable('b), observable('c), observable('d), observable('e)) => operator('a, ('a, 'b, 'c, 'd, 'e)) =
+    "withLatestFrom";
+  
+  
 
   [@bs.module "rxjs/operators"]
   external every: ('a => bool) => operator('a, bool) = "every";

@@ -36,7 +36,7 @@ o1
 
 let o1 = Observable.fromArray([|1, 2, 3, 4|]);
 o1
-->pipe3(map((i) => i + 20), filter(i => i mod 2 == 0), toArray())
+->pipe3(map(i => i + 20), filter(i => i mod 2 == 0), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|22, 24|]), ());
 
 let o1 = Observable.fromArray([|resolve("one"), resolve("two")|]);
@@ -333,12 +333,37 @@ let o1 = of3(3, 4, 5);
 let o2 = o1->pipe2(startWith(2), toArray());
 o2->subscribe(~next=arr => expectToEqual(arr, [|2, 3, 4, 5|]), ());
 
-/* bad test*/
 let o1 = interval(50)->pipe(take(4));
-let o2 = interval(100)->pipe(take(2));
+let o2 = of1(300);
 o1
 ->pipe2(withLatestFrom(o2), toArray())
-->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 1, true), ());
+->subscribe(
+    ~next=
+      arr =>
+        expectToEqual(arr, [|(0, 300), (1, 300), (2, 300), (3, 300)|]),
+    (),
+  );
+
+let o1 = of2("a", "b");
+let o2 = of1(false);
+let o3 = of1(123);
+let o4 = of1({"x": "y"});
+let o5 = of1(17.2);
+
+o1
+->pipe2(withLatestFrom4(o2, o3, o4, o5), toArray())
+->subscribe(
+    ~next=
+      arr =>
+        expectToEqual(
+          arr,
+          [|
+            ("a", false, 123, {"x": "y"}, 17.2),
+            ("b", false, 123, {"x": "y"}, 17.2),
+          |],
+        ),
+    (),
+  );
 
 let o1 = of2("a", "b");
 let o2 = of3(2, 3, 4);
@@ -500,11 +525,11 @@ let o1 =
 
 Js.Global.setTimeout(
   () => {
-    let s = o1
-    ->ConnectableObservable.asConnectableObservable
-    ->Belt.Option.getExn
-    ->ConnectableObservable.connect
-
+    let s =
+      o1
+      ->ConnectableObservable.asConnectableObservable
+      ->Belt.Option.getExn
+      ->ConnectableObservable.connect;
 
     s->Subscription.unsubscribe;
     expectToEqual(s->Js.typeof, "object");

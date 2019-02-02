@@ -285,7 +285,11 @@ module Operators: {
 
   let pairwise: unit => operator('a, ('a, 'a));
 
-  let withLatestFrom: observable('b) => operator('a, ('a, 'b));
+
+  let withLatestFrom: (observable('b)) => operator('a, ('a, 'b)) 
+  let withLatestFrom2: (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) 
+  let withLatestFrom3: (observable('b), observable('c), observable('d)) => operator('a, ('a, 'b, 'c, 'd)) 
+  let withLatestFrom4: (observable('b), observable('c), observable('d), observable('e)) => operator('a, ('a, 'b, 'c, 'd, 'e)) 
 
   let every: ('a => bool) => operator('a, bool);
 

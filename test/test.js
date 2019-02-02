@@ -17,4 +17,5 @@ var ReplaySubject = rxjs.ReplaySubject;
 var combineAll = operators.combineAll;
 var withLatestFrom = operators.withLatestFrom;
 var pairwise = operators.pairwise;
+var EMPTY = rxjs.EMPTY;
 
