@@ -112,6 +112,8 @@ module Observable: {
     ) =>
     subscription;
 
+  let subscribeObserver: (t('a), observer('a)) => subscription;
+
   let create: ((observer('a), unit) => unit) => observable('a);
 
   let of1: 'a => observable('a);
@@ -134,6 +136,7 @@ module Observable: {
   let fromPromise: Js.Promise.t('a) => observable('a);
   let fromString: string => observable(string);
   let empty: observable('a);
+  let never: observable('a);
   let interval: int => observable(int);
 
   let zip2: (observable('a), observable('b)) => observable(('a, 'b));
@@ -285,11 +288,15 @@ module Operators: {
 
   let pairwise: unit => operator('a, ('a, 'a));
 
-
-  let withLatestFrom: (observable('b)) => operator('a, ('a, 'b)) 
-  let withLatestFrom2: (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) 
-  let withLatestFrom3: (observable('b), observable('c), observable('d)) => operator('a, ('a, 'b, 'c, 'd)) 
-  let withLatestFrom4: (observable('b), observable('c), observable('d), observable('e)) => operator('a, ('a, 'b, 'c, 'd, 'e)) 
+  let withLatestFrom: observable('b) => operator('a, ('a, 'b));
+  let withLatestFrom2:
+    (observable('b), observable('c)) => operator('a, ('a, 'b, 'c));
+  let withLatestFrom3:
+    (observable('b), observable('c), observable('d)) =>
+    operator('a, ('a, 'b, 'c, 'd));
+  let withLatestFrom4:
+    (observable('b), observable('c), observable('d), observable('e)) =>
+    operator('a, ('a, 'b, 'c, 'd, 'e));
 
   let every: ('a => bool) => operator('a, bool);
 
@@ -443,8 +450,7 @@ module Operators: {
 
   let elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a);
 
-  let find:
-    (('a, int, observable('a)) => bool) => operator('a, option('a));
+  let find: (('a, int, observable('a)) => bool) => operator('a, option('a));
 
   let findIndex: (('a, int, observable('a)) => bool) => operator('a, int);
 

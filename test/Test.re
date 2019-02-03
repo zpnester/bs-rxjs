@@ -1258,3 +1258,14 @@ observable->Observable.subscribe(
   (),
 );
 /* END OF README */
+
+
+never
+->subscribe(~next=_ => failwith("fail"), ());
+
+let o1 = Subject.make();
+o1->Subject.asObservable->pipe2(take(2), toArray())
+->subscribe(~next=x => expectToEqual(x, [|"a", "b"|]), ());
+
+let o2 = of2("a", "b")->subscribeObserver(o1->Subject.asObserver);
+

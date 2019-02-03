@@ -1,7 +1,7 @@
 
 # bs-rxjs
 
-RxJS bindings for BuckleScript
+RxJS v6 bindings for BuckleScript
 
 ## Example
 

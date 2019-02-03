@@ -176,6 +176,13 @@ module ObservableOps = (M: TypeImpl) => {
     };
     subscribe_(self, args);
   };
+
+  [@bs.send]
+  external subscribeObserver_: (M.t('a), observer('a)) => subscription =
+    "subscribe";
+
+  let subscribeObserver = (self: M.t('a), observer: observer('a)) =>
+    subscribeObserver_(self, observer);
 };
 
 module Observable = {
@@ -224,6 +231,7 @@ module Observable = {
   external fromString: string => observable(string) = "from";
   /* empty is deprecated in favor of using EMPTY constant */
   [@bs.module "rxjs"] external empty: observable('a) = "EMPTY";
+  [@bs.module "rxjs"] external never: observable('a) = "NEVER";
   [@bs.module "rxjs"] external interval: int => observable(int) = "interval";
 
   [@bs.module "rxjs"]
@@ -493,24 +501,26 @@ module Operators = {
   [@bs.module "rxjs/operators"]
   external pairwise: unit => operator('a, ('a, 'a)) = "pairwise";
 
-
   [@bs.module "rxjs/operators"]
   external withLatestFrom: observable('b) => operator('a, ('a, 'b)) =
     "withLatestFrom";
 
   [@bs.module "rxjs/operators"]
-  external withLatestFrom2: (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) =
+  external withLatestFrom2:
+    (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) =
     "withLatestFrom";
 
-   [@bs.module "rxjs/operators"]
-  external withLatestFrom3: (observable('b), observable('c), observable('d)) => operator('a, ('a, 'b, 'c, 'd)) =
+  [@bs.module "rxjs/operators"]
+  external withLatestFrom3:
+    (observable('b), observable('c), observable('d)) =>
+    operator('a, ('a, 'b, 'c, 'd)) =
     "withLatestFrom";
 
-     [@bs.module "rxjs/operators"]
-  external withLatestFrom4: (observable('b), observable('c), observable('d), observable('e)) => operator('a, ('a, 'b, 'c, 'd, 'e)) =
+  [@bs.module "rxjs/operators"]
+  external withLatestFrom4:
+    (observable('b), observable('c), observable('d), observable('e)) =>
+    operator('a, ('a, 'b, 'c, 'd, 'e)) =
     "withLatestFrom";
-  
-  
 
   [@bs.module "rxjs/operators"]
   external every: ('a => bool) => operator('a, bool) = "every";
@@ -796,11 +806,10 @@ module Operators = {
     (('a, int, observable('a)) => bool) => operator('a, Js.Undefined.t('a)) =
     "find";
 
-  let find = (predicate: ('a, int, observable('a)) => bool) => {
-    Operator.make(src => {
+  let find = (predicate: ('a, int, observable('a)) => bool) =>
+    Operator.make(src =>
       src->Observable.pipe2(find_(predicate), map(Js.Undefined.toOption))
-    });
-  };
+    );
 
   [@bs.module "rxjs/operators"]
   external findIndex:
