@@ -1,7 +1,7 @@
 {
   "name": "@zpnester/bs-rxjs",
   "description": "RxJS v6 bindings for BuckleScript",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": {
     "name": "Andriy Nesterenko",
     "email": "zpnester@gmail.com",
@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^4.0.7",
+    "bs-platform": "^4.0.18",
     "expect": "^24.0.0"
   },
   "keywords": [

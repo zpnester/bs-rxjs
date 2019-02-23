@@ -22,8 +22,6 @@ let observable =
       1000,
     )
     |> ignore;
-
-    () => /* teardown logic */ ();
   });
 
 observable->Observable.subscribe(
@@ -34,7 +32,7 @@ observable->Observable.subscribe(
 );
 ```
 
-## Installation
+## Install
 
 ```
 npm install --save @zpnester/bs-rxjs

@@ -5,6 +5,11 @@ open Operators;
 open Observer;
 open Expect_;
 
+let of1 = a => of_([|a|]); 
+let of2 = (a, b) => of_([|a, b|]);
+let of3 = (a, b, c) => of_([|a, b, c|]);
+let of4 = (a, b, c, d) => of_([|a, b, c, d|]);
+
 let o1 = Observable.fromArray([|1, 2, 3, 4, 5, 6|]);
 o1
 ->pipe(toArray())
@@ -42,18 +47,29 @@ o1
 let o1 = Observable.fromArray([|resolve("one"), resolve("two")|]);
 let o2 = Observable.fromArray([|resolve("three"), resolve("four")|]);
 o1
-->pipe3(concat(o2), concatAllPromises(), toArray())
+->pipe3(concat([|o2|]), concatAllPromises(), toArray())
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|"one", "two", "three", "four"|]),
     (),
   );
 
-let s1 = of2("one", "two");
-let s2 = of2("three", "four");
-let s3 = of2("a", "b");
-let s4 = of1("c");
 
-Observable.concat4(s1, s2, s3, s4)
+let o1 = Observable.of_([|"one", "two"|]);
+let o2 = Observable.of_([|"three", "four"|]);
+Observable.concat([|o1, o2|])
+->pipe(toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr, [|"one", "two", "three", "four"|]),
+    (),
+  );
+
+
+let s1 = of_([|"one", "two"|]);
+let s2 = of_([|"three", "four"|]);
+let s3 = of_([|"a", "b"|]);
+let s4 = of_([|"c"|]);
+
+Observable.concat([|s1, s2, s3, s4|])
 ->pipe(toArray())
 ->subscribe(
     ~next=
@@ -74,14 +90,31 @@ forkJoin2(o1, o2)
     (),
   );
 
+let o1 = of_([|"A"|]);
+forkJoin([|o1|])
+->subscribe(~next=x=> {
+  expectToEqual(x, [|"A"|]);
+}, ());
+
 let o1 = Observable.fromArray([|1, 2, 3, 4|]);
 let o2 = Observable.fromArray([|51, 52, 53|]);
-merge2(o1, o2)
+Observable.merge([|o1, o2|])
 ->pipe(toArray())
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|1, 2, 3, 4, 51, 52, 53|]),
     (),
   );
+
+
+let o1 = Observable.fromArray([|1, 2, 3, 4|]);
+let o2 = Observable.fromArray([|51, 52, 53|]);
+o1
+->pipe2(merge(o2), toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr, [|1, 2, 3, 4, 51, 52, 53|]),
+    (),
+  );
+
 
 let o1 =
   Observable.range(~start=456, ~count=3)->pipe2(pairwise(), toArray());
@@ -101,8 +134,8 @@ o1
 ->subscribe(~next=x => expectToEqual(x, false), ());
 
 let o1 =
-  Observable.of1("a")
-  ->pipe2(concat(Observable.throwError("oops")), retry(3));
+  of1("a")
+  ->pipe2(concat([|Observable.throwError("oops")|]), retry(3));
 o1->subscribe(
   ~next=x => Js.log(x),
   ~error=e => expectToEqual(e, Js.Json.string("oops")),
@@ -112,7 +145,8 @@ o1->subscribe(
 o1
 ->pipe2(
     Operators.catchError(x =>
-      of1("caught " ++ x->Js.Json.decodeString->Belt.Option.getExn)
+      of_([|"caught " ++ x->Js.Json.decodeString
+        ->Belt.Option.getExn|])
     ),
     toArray(),
   )
@@ -205,7 +239,7 @@ of3(
 )
 ->pipe3(
     groupBy(x => x##age),
-    flatMap((g, i) => {
+    flatMapi((g, i) => {
       expectToEqual(i->Js.typeof, "number");
       g->pipe(
         reduce(
@@ -326,11 +360,11 @@ let o1 =
   of1("A")->pipe(delayWhen((_, _) => timer(~delay=`Int(300), ()), ()));
 let o2 =
   of1("B")->pipe(delayWhen((_, _) => timer(~delay=`Int(100), ()), ()));
-let o3 = race2(o1, o2);
+let o3 = Observable.race([|o1, o2|]);
 o3->subscribe(~next=x => expectToEqual(x, "B"), ());
 
 let o1 = of3(3, 4, 5);
-let o2 = o1->pipe2(startWith(2), toArray());
+let o2 = o1->pipe2(startWith([|2|]), toArray());
 o2->subscribe(~next=arr => expectToEqual(arr, [|2, 3, 4, 5|]), ());
 
 let o1 = interval(50)->pipe(take(4));
@@ -341,6 +375,18 @@ o1
     ~next=
       arr =>
         expectToEqual(arr, [|(0, 300), (1, 300), (2, 300), (3, 300)|]),
+    (),
+  );
+
+
+let o1 = interval(50)->pipe(take(4));
+let o2 = of1(300);
+o1
+->pipe2(withLatestFromMany([|o2|]), toArray())
+->subscribe(
+    ~next=
+      arr =>
+        expectToEqual(arr, [| [|0, 300|], [|1, 300|], [|2, 300|], [|3, 300|] |]),
     (),
   );
 
@@ -371,6 +417,15 @@ zip2(o1, o2)
 ->pipe(toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|("a", 2), ("b", 3)|]), ());
 
+let o1 = of2("a", "b");
+let o2 = of3("C", "D", "E");
+let o3 = of2("X", "Y");
+zip([|o1, o2, o3|])
+->pipe2(toArray(), take(2))
+->subscribe(~next=arr => expectToEqual(arr, [|
+  [|"a", "C", "X"|], [|"b", "D", "Y"|]
+|]), ());
+
 let o1 = empty;
 o1
 ->pipe(defaultIfEmpty("qqq"))
@@ -396,7 +451,6 @@ Observable.create(obs => {
     500,
   )
   |> ignore;
-  () => ();
 })
 ->pipe(toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"q", "a", "z"|]), ());
@@ -452,11 +506,10 @@ let o2 =
     } else {
       obs->Observer.next("d");
     };
-    () => ();
   });
 let o1 = of3("a", "b", "c");
 let o3 = of1("e");
-concat3(o1, o2, o3)
+Observable.concat([|o1, o2, o3|])
 ->pipe2(
     retryWhen(errs => {
       errs->subscribe(~next=x => expectToEqualAny(x, Failure("f")), ())
@@ -485,7 +538,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe2(publish(), refCount());
 
@@ -519,7 +571,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe(publishBehavior("q"));
 
@@ -559,7 +610,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe(publishLast());
 
@@ -593,7 +643,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe(publishReplay(~bufferSize=1, ()));
 
@@ -628,7 +677,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe(multicast(`Subject(s1)));
 
@@ -664,7 +712,6 @@ let o1 =
       500,
     )
     |> ignore;
-    () => ();
   })
   ->pipe(share());
 
@@ -685,7 +732,6 @@ Observable.create(obs => {
     500,
   )
   |> ignore;
-  () => ();
 })
 ->pipe2(shareReplay(~bufferSize=3, ()), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
@@ -711,7 +757,6 @@ Observable.create(obs => {
     50,
   )
   |> ignore;
-  () => ();
 })
 ->pipe3(debounce(() => timer(~delay=`Int(100), ())), take(1), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|3|]), ());
@@ -727,7 +772,6 @@ Observable.create(obs => {
     50,
   )
   |> ignore;
-  () => ();
 })
 ->pipe3(debounceTime(100), take(1), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|3|]), ());
@@ -823,7 +867,6 @@ let o1 =
       1000,
     )
     |> ignore;
-    () => ();
   });
 
 o1
@@ -851,7 +894,6 @@ let o1 =
       1000,
     )
     |> ignore;
-    () => ();
   });
 
 interval(50)
@@ -924,11 +966,11 @@ let o1 =
 let undef: Js.Json.t = [%raw "undefined"];
 
 o1
-->pipe(pluck4("result", "user", "address", "street"))
+->pipe(pluck([|"result", "user", "address", "street"|]))
 ->subscribe(~next=x => expectToEqualAny(x, "Roscoe"), ());
 
 o1
-->pipe(pluck4("result", "user", "address", "nam"))
+->pipe(pluck([|"result", "user", "address", "nam"|]))
 ->subscribe(~next=x => expectToEqual(x, undef), ());
 
 of2("a", "b")
@@ -938,7 +980,7 @@ of2("a", "b")
 let o1 = interval(50);
 let o2 = interval(200);
 o1
-->pipe4(window(o2), flatMap((x, _) => x), take(10), toArray())
+->pipe4(window(o2), flatMap(x => x), take(10), toArray())
 ->subscribe(
     ~next=
       arr => {
@@ -970,7 +1012,7 @@ o1
 
 let o1 = interval(50);
 o1
-->pipe4(windowTime(200), flatMap((x, _) => x), take(10), toArray())
+->pipe4(windowTime(200), flatMap(x => x), take(10), toArray())
 ->subscribe(
     ~next=
       arr => {
@@ -992,7 +1034,6 @@ let o1 =
       1000,
     )
     |> ignore;
-    () => ();
   });
 
 o1
@@ -1049,9 +1090,9 @@ of2("a", "b")
 ->subscribe(~next=x => expectToEqual(x, "y"), ());
 
 of2("b", "c")
-->pipe3(endWith4("d", "e", "f", "g"), startWith2("_", "a"), toArray())
+->pipe3(endWith([|"d", "e", "f", "g", "z"|]), startWith([|"_", "a"|]), toArray())
 ->subscribe(
-    ~next=x => expectToEqual(x, [|"_", "a", "b", "c", "d", "e", "f", "g"|]),
+    ~next=x => expectToEqual(x, [|"_", "a", "b", "c", "d", "e", "f", "g", "z"|]),
     (),
   );
 
@@ -1129,7 +1170,7 @@ o1
 
 let op1 =
   Operator.make(src =>
-    Observable.create(obs => {
+    Observable.createWithTeardown(obs => {
       let s =
         src->subscribe(
           ~next=
@@ -1167,7 +1208,7 @@ of3("a", "b", "c")
 ->subscribe(~next=x => expectToEqual(x, [|"a!a!", "b!b!", "c!c!"|]), ());
 
 let o1 =
-  Observable.create(obs => {
+  Observable.createWithTeardown(obs => {
     obs->Observer.next("a");
     () => Js.log("teardown OK");
   });
@@ -1194,7 +1235,7 @@ empty
 ->subscribe(~next=x => expectToEqual(x, "x"), ());
 
 /* empty does not work */
-create((_, ()) => ())
+create(_ => ())
 ->pipe(timeoutWith(`Int(100), of1("a")))
 ->subscribe(
     ~next=x => expectToEqual(x, "a"),
@@ -1214,7 +1255,7 @@ of1("a")
     (),
   );
 
-of6("a", "a", "b", "b", "b", "c")
+of_([|"a", "a", "b", "b", "b", "c"|])
 ->pipe2(
     distinctUntilChanged(
       ~compare=
@@ -1247,8 +1288,6 @@ let observable =
       1000,
     )
     |> ignore;
-
-    () => /* teardown logic */ ();
   });
 
 observable->Observable.subscribe(
@@ -1268,4 +1307,31 @@ o1->Subject.asObservable->pipe2(take(2), toArray())
 ->subscribe(~next=x => expectToEqual(x, [|"a", "b"|]), ());
 
 let o2 = of2("a", "b")->subscribeObserver(o1->Subject.asObserver);
+
+
+
+let o1 = of3("a", "b", "c");
+let o2 = of2("d", "e");
+let o3 = of2("f", "g");
+combineLatest([|o1, o2, o3|])
+->pipe(toArray())
+->subscribe(~next=x => {
+  expectToEqual(x, [|
+    [|"c", "e", "f"|],
+    [|"c", "e", "g"|],
+  |]);
+}, ())
+
+let o1 = of3("a", "b", "c");
+let o2 = of2(1, 2);
+let o3 = of2(true, false);
+combineLatest3(o1, o2, o3)
+->pipe(toArray())
+->subscribe(~next=x => {
+  expectToEqual(x, [|
+    ("c", 2, true),
+    ("c", 2, false),
+  |]);
+}, ())
+
 
