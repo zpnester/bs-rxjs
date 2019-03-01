@@ -193,41 +193,18 @@ module Observable = {
   });
 
   [@bs.module "rxjs"] [@bs.scope "Observable"]
-  external create: (observer('a) => unit) => observable('a) =
-    "create";
+  external create: (observer('a) => unit) => observable('a) = "create";
 
   [@bs.module "rxjs"] [@bs.scope "Observable"]
-  external createWithTeardown: (observer('a) => (unit => unit)) => observable('a) =
+  external createWithTeardown:
+    ((observer('a), unit) => unit) => observable('a) =
     "create";
-
-
-  /*[@bs.module "rxjs"] external of1: 'a => observable('a) = "of";
-  [@bs.module "rxjs"] external of2: ('a, 'a) => observable('a) = "of";
-  [@bs.module "rxjs"] external of3: ('a, 'a, 'a) => observable('a) = "of";
-  [@bs.module "rxjs"] external of4: ('a, 'a, 'a, 'a) => observable('a) = "of";
-*/
 
   [@bs.module "rxjs"] [@bs.variadic]
   external of_: array('a) => observable('a) = "of";
 
-  /*[@bs.module "rxjs"]
-  external race2: (observable('a), observable('a)) => observable('a) =
-    "race";
-  [@bs.module "rxjs"]
-  external race3:
-    (observable('a), observable('a), observable('a)) => observable('a) =
-    "race";
-  [@bs.module "rxjs"]
-  external race4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a) =
-    "race";*/
-
   [@bs.module "rxjs"] [@bs.variadic]
-  external race:
-    array(observable('a)) =>
-    observable('a) =
-    "race";
+  external race: array(observable('a)) => observable('a) = "race";
 
   [@bs.module "rxjs"]
   external fromArray: array('a) => observable('a) = "from";
@@ -256,9 +233,8 @@ module Observable = {
     observable(('a, 'b, 'c, 'd)) =
     "zip";
 
-   [@bs.module "rxjs"] [@bs.variadic]
-  external zip: array(observable('a)) => observable(array('a)) =
-    "zip";
+  [@bs.module "rxjs"] [@bs.variadic]
+  external zip: array(observable('a)) => observable(array('a)) = "zip";
 
   [@bs.module "rxjs"]
   external timer_:
@@ -287,10 +263,8 @@ module Observable = {
     "fromEvent";
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external combineLatest:
-    array(observable('a)) => observable(array('a)) =
+  external combineLatest: array(observable('a)) => observable(array('a)) =
     "combineLatest";
-
 
   [@bs.module "rxjs"]
   external combineLatest2:
@@ -310,7 +284,8 @@ module Observable = {
     "combineLatest";
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external forkJoin: array(observable('a)) => observable(array('a)) = "forkJoin";
+  external forkJoin: array(observable('a)) => observable(array('a)) =
+    "forkJoin";
 
   [@bs.module "rxjs"]
   external forkJoin2:
@@ -329,24 +304,8 @@ module Observable = {
     observable(('a, 'b, 'c, 'd)) =
     "forkJoin";
 
-
   [@bs.module "rxjs"] [@bs.variadic]
-  external merge: array(observable('a)) => observable('a) =
-    "merge";  
-
- /* [@bs.module "rxjs"]
-  external merge2: (observable('a), observable('a)) => observable('a) =
-    "merge";
-  [@bs.module "rxjs"]
-  external merge3:
-    (observable('a), observable('a), observable('a)) => observable('a) =
-    "merge";
-
-  [@bs.module "rxjs"]
-  external merge4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a) =
-    "merge";*/
+  external merge: array(observable('a)) => observable('a) = "merge";
 
   [@bs.module "rxjs"]
   external throwError: 'e => observable('a) = "throwError";
@@ -355,23 +314,7 @@ module Observable = {
   external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external concat: array(observable('a)) => observable('a) =
-    "concat";
-
- /* [@bs.module "rxjs"]
-  external concat2: (observable('a), observable('a)) => observable('a) =
-    "concat";
-
-  [@bs.module "rxjs"]
-  external concat3:
-    (observable('a), observable('a), observable('a)) => observable('a) =
-    "concat";
-
-  [@bs.module "rxjs"]
-  external concat4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a) =
-    "concat";*/
+  external concat: array(observable('a)) => observable('a) = "concat";
 
   [@bs.module "rxjs"]
   external iif:
@@ -488,38 +431,15 @@ module Operators = {
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external startWith: array('a) => operator('a, 'a) = "startWith";
 
-  /*[@bs.module "rxjs/operators"]
-  external startWith: 'a => operator('a, 'a) = "startWith";
-
-  [@bs.module "rxjs/operators"]
-  external startWith2: ('a, 'a) => operator('a, 'a) = "startWith";
-
-  [@bs.module "rxjs/operators"]
-  external startWith3: ('a, 'a, 'a) => operator('a, 'a) = "startWith";
-
-  [@bs.module "rxjs/operators"]
-  external startWith4: ('a, 'a, 'a, 'a) => operator('a, 'a) = "startWith";
-*/
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external endWith: array('a) => operator('a, 'a) = "endWith";
-/*
-  [@bs.module "rxjs/operators"]
-  external endWith: 'a => operator('a, 'a) = "endWith";
 
-  [@bs.module "rxjs/operators"]
-  external endWith2: ('a, 'a) => operator('a, 'a) = "endWith";
-
-  [@bs.module "rxjs/operators"]
-  external endWith3: ('a, 'a, 'a) => operator('a, 'a) = "endWith";
-
-  [@bs.module "rxjs/operators"]
-  external endWith4: ('a, 'a, 'a, 'a) => operator('a, 'a) = "endWith";
-*/
   [@bs.module "rxjs/operators"]
   external pairwise: unit => operator('a, ('a, 'a)) = "pairwise";
 
-   [@bs.module "rxjs/operators"] [@bs.variadic]
-  external withLatestFromMany: array(observable('a)) => operator('a, array('a)) =
+  [@bs.module "rxjs/operators"] [@bs.variadic]
+  external withLatestFromMany:
+    array(observable('a)) => operator('a, array('a)) =
     "withLatestFrom";
 
   [@bs.module "rxjs/operators"]
@@ -629,13 +549,11 @@ module Operators = {
 
   /* TODO result selector */
   [@bs.module "rxjs/operators"]
-  external flatMap: ('a => observable('b)) => operator('a, 'b) =
-    "flatMap";
+  external flatMap: ('a => observable('b)) => operator('a, 'b) = "flatMap";
 
   [@bs.module "rxjs/operators"]
   external flatMapi: (('a, int) => observable('b)) => operator('a, 'b) =
     "flatMap";
-
 
   [@bs.module "rxjs/operators"]
   external concatMapTo: observable('b) => operator('a, 'b) = "concatMapTo";
@@ -660,21 +578,8 @@ module Operators = {
 
   /* partition moved to Observable */
 
-
-
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external pluck: array(string) => operator('a, Js.Json.t) = "pluck";
-
-  /*[@bs.module "rxjs/operators"]
-  external pluck2: (string, string) => operator('a, Js.Json.t) = "pluck";
-
-  [@bs.module "rxjs/operators"]
-  external pluck3: (string, string, string) => operator('a, Js.Json.t) =
-    "pluck";
-
-  [@bs.module "rxjs/operators"]
-  external pluck4: (string, string, string, string) => operator('a, Js.Json.t) =
-    "pluck";*/
 
   /* TODO result selector */
   [@bs.module "rxjs/operators"]
@@ -978,7 +883,7 @@ module WebSocketSubject = {
     type t('a) = websocket_subject('a);
   });
 
-  [@bs.module "rxjs/websocket"] [@bs.new]
+  [@bs.module "rxjs/webSocket"] [@bs.new]
   external make: (~url: string) => websocket_subject(Js.Json.t) =
     "WebSocketSubject";
 };

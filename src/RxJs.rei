@@ -115,28 +115,13 @@ module Observable: {
   let subscribeObserver: (t('a), observer('a)) => subscription;
 
   let create: (observer('a) => unit) => observable('a);
-  let createWithTeardown: (observer('a) => (unit => unit)) => observable('a);
+  let createWithTeardown: ((observer('a), unit) => unit) => observable('a);
 
-  /*let of1: 'a => observable('a);
-  let of2: ('a, 'a) => observable('a);
-  let of3: ('a, 'a, 'a) => observable('a);    
-  let of4: ('a, 'a, 'a, 'a) => observable('a);*/
-  
   [@bs.module "rxjs"] [@bs.variadic]
   external of_: array('a) => observable('a) = "of";
 
-  /*let race2: (observable('a), observable('a)) => observable('a);
-  let race3:
-    (observable('a), observable('a), observable('a)) => observable('a);
-  let race4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a);*/
-
   [@bs.module "rxjs"] [@bs.variadic]
-  external race:
-    array(observable('a)) =>
-    observable('a) =
-    "race";  
+  external race: array(observable('a)) => observable('a) = "race";
 
   let fromArray: array('a) => observable('a);
   let fromPromise: Js.Promise.t('a) => observable('a);
@@ -155,8 +140,7 @@ module Observable: {
     observable(('a, 'b, 'c, 'd));
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external zip: array(observable('a)) => observable(array('a)) =
-    "zip";
+  external zip: array(observable('a)) => observable(array('a)) = "zip";
 
   let timer:
     (
@@ -170,11 +154,9 @@ module Observable: {
 
   let fromEvent: (Dom.eventTarget, string) => observable(Dom.event);
 
- [@bs.module "rxjs"] [@bs.variadic]
-  external combineLatest:
-    array(observable('a)) => observable(array('a)) =
+  [@bs.module "rxjs"] [@bs.variadic]
+  external combineLatest: array(observable('a)) => observable(array('a)) =
     "combineLatest";
-
 
   let combineLatest2:
     (observable('a), observable('b)) => observable(('a, 'b));
@@ -188,7 +170,8 @@ module Observable: {
     observable(('a, 'b, 'c, 'd));
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external forkJoin: array(observable('a)) => observable(array('a)) = "forkJoin";
+  external forkJoin: array(observable('a)) => observable(array('a)) =
+    "forkJoin";
 
   let forkJoin2: (observable('a), observable('b)) => observable(('a, 'b));
 
@@ -201,33 +184,14 @@ module Observable: {
     observable(('a, 'b, 'c, 'd));
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external merge: array(observable('a)) => observable('a) =
-    "merge";  
-
-  /*let merge2: (observable('a), observable('a)) => observable('a);
-  let merge3:
-    (observable('a), observable('a), observable('a)) => observable('a);
-
-  let merge4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a);*/
+  external merge: array(observable('a)) => observable('a) = "merge";
 
   let throwError: 'e => observable('a);
 
   let toPromise: observable('a) => Js.Promise.t('a);
 
   [@bs.module "rxjs"] [@bs.variadic]
-  external concat: array(observable('a)) => observable('a) =
-    "concat";
-
- /* let concat2: (observable('a), observable('a)) => observable('a);
-
-  let concat3:
-    (observable('a), observable('a), observable('a)) => observable('a);
-
-  let concat4:
-    (observable('a), observable('a), observable('a), observable('a)) =>
-    observable('a);*/
+  external concat: array(observable('a)) => observable('a) = "concat";
 
   let iif: (unit => bool, observable('a), observable('a)) => observable('a);
 };
@@ -288,30 +252,15 @@ module Operators: {
 
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external startWith: array('a) => operator('a, 'a) = "startWith";
-/*
-  let startWith: 'a => operator('a, 'a);
-
-  let startWith2: ('a, 'a) => operator('a, 'a);
-
-  let startWith3: ('a, 'a, 'a) => operator('a, 'a);
-
-  let startWith4: ('a, 'a, 'a, 'a) => operator('a, 'a);*/
 
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external endWith: array('a) => operator('a, 'a) = "endWith";
 
- /* let endWith: 'a => operator('a, 'a);
-
-  let endWith2: ('a, 'a) => operator('a, 'a);
-
-  let endWith3: ('a, 'a, 'a) => operator('a, 'a);
-
-  let endWith4: ('a, 'a, 'a, 'a) => operator('a, 'a);*/
-
   let pairwise: unit => operator('a, ('a, 'a));
 
   [@bs.module "rxjs/operators"] [@bs.variadic]
-  external withLatestFromMany: array(observable('a)) => operator('a, array('a)) =
+  external withLatestFromMany:
+    array(observable('a)) => operator('a, array('a)) =
     "withLatestFrom";
 
   let withLatestFrom: observable('b) => operator('a, ('a, 'b));
@@ -391,12 +340,6 @@ module Operators: {
 
   [@bs.module "rxjs/operators"] [@bs.variadic]
   external pluck: array(string) => operator('a, Js.Json.t) = "pluck";
-
-  /*let pluck2: (string, string) => operator('a, Js.Json.t);
-
-  let pluck3: (string, string, string) => operator('a, Js.Json.t);
-
-  let pluck4: (string, string, string, string) => operator('a, Js.Json.t);*/
 
   let switchMap: (('a, int) => observable('b)) => operator('a, 'b);
 
