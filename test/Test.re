@@ -1161,7 +1161,7 @@ of2(o1, o2)
 ->subscribe(~next=x => expectToEqual(x, [|"a", "b", "c", "d", "e"|]), ());
 
 let o1 = of2("a", "b");
-let o2: observable(string) = throwError("err");
+let o2: Observable.t(string) = throwError("err");
 let o3 = of3("c", "d", "e");
 o1
 ->pipe(onErrorResumeNext([|o2, o3|]))
