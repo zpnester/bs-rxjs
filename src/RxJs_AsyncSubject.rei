@@ -2,9 +2,10 @@ open RxJs__;
 
 type t('a) = async_subject('a);
 
-let asObservable: t('a) => observable('a);
+include (module type of
+  MakeSubject({
+    type t('a) = async_subject('a);
+  }));
 
-let asObserver: t('a) => observer('a);
-let asSubject: t('a) => subject('a);
-
-let make: unit => async_subject('a);
+[@bs.module "rxjs"] [@bs.new]
+external make: unit => async_subject('a) = "AsyncSubject";

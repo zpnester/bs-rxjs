@@ -2,4 +2,4 @@ open RxJs__;
 
 type t = subscription;
 
-let unsubscribe: subscription => unit;
+[@bs.send] external unsubscribe: subscription => unit = "unsubscribe";

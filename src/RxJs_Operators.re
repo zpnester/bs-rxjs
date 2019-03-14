@@ -45,13 +45,10 @@ external takeUntil: observable('b) => operator('a, 'a) = "takeUntil";
 external takeWhile: ('a => bool) => operator('a, 'a) = "takeWhile";
 
 [@bs.module "rxjs/operators"]
-external delay_:
+external delay:
   ([@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
   operator('a, 'a) =
   "delay";
-
-let delay = (d: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
-  delay_(d);
 
 [@bs.module "rxjs/operators"]
 external delayWhen:
@@ -263,29 +260,19 @@ external finalize: (unit => unit) => operator('a, 'a) = "finalize";
 external repeat: int => operator('a, 'a) = "repeat";
 
 [@bs.module "rxjs/operators"]
-external timeout_:
+external timeout:
   ([@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
   operator('a, 'a) =
   "timeout";
 
-let timeout = (due: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
-  timeout_(due);
-
 [@bs.module "rxjs/operators"]
-external timeoutWith_:
+external timeoutWith:
   (
     [@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)],
     observable('a)
   ) =>
   operator('a, 'a) =
   "timeoutWith";
-
-let timeoutWith =
-    (
-      due: [ | `Int(int) | `Float(float) | `Date(Js.Date.t)],
-      withObservable: observable('a),
-    ) =>
-  timeoutWith_(due, withObservable);
 
 [@bs.module "rxjs/operators"]
 external combineAll: unit => operator(observable('a), array('a)) =
@@ -299,17 +286,13 @@ external sequenceEqual: observable('a) => operator('a, bool) =
   "sequenceEqual";
 
 [@bs.module "rxjs/operators"]
-external multicast_:
+external multicast:
   (
   [@bs.unwrap]
   [ | `Subject(subject('a)) | `Factory(unit => subject('a))]
   ) =>
   operator('a, 'a) =
   "multicast";
-
-let multicast =
-    (s: [ | `Subject(subject('a)) | `Factory(unit => subject('a))]) =>
-  multicast_(s);
 
 [@bs.module "rxjs/operators"]
 external share: unit => operator('a, 'a) = "share";

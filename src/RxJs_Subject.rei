@@ -2,8 +2,15 @@ open RxJs__;
 
 type t('a) = subject('a);
 
-let asObservable: t('a) => observable('a);
-let asObserver: t('a) => observer('a);
+include (module type of
+  MakeObservable({
+    type t('a) = subject('a);
+  }));
+include (module type of
+  MakeObserver({
+    type t('a) = subject('a);
+  }));
+
 let asSubject: observable('a) => option(subject('a));
 
-let make: unit => subject('a);
+[@bs.module "rxjs"] [@bs.new] external make: unit => subject('a) = "Subject";

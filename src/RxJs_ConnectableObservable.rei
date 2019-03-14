@@ -2,11 +2,14 @@ open RxJs__;
 
 type t('a) = connectable_observable('a);
 
-let asObservable: t('a) => observable('a);
+include (module type of
+  MakeObservable({
+    type t('a) = connectable_observable('a);
+  }));
 
-let getSubject: t('a) => subject('a);
+[@bs.send] external getSubject: t('a) => subject('a) = "getSubject";
 
 let asConnectableObservable:
   observable('a) => option(connectable_observable('a));
 
-let connect: t('a) => subscription;
+[@bs.send] external connect: t('a) => subscription = "connect";

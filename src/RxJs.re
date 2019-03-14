@@ -7,5 +7,5 @@ module ConnectableObservable = RxJs_ConnectableObservable;
 module Subject = RxJs_Subject;
 module AsyncSubject = RxJs_AsyncSubject;
 module ReplaySubject = RxJs_ReplaySubject;
-module BehaviorSubject = RxJs_BcehaviorSubject;
-module RxJs_WebSocketSubject = WebSocketSubject;
+module BehaviorSubject = RxJs_BehaviorSubject;
+module WebSocketSubject = RxJs_WebSocketSubject;

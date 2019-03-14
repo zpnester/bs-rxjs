@@ -1,44 +1,63 @@
 open RxJs__;
 
-let map: ('a => 'b) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external map: ('a => 'b) => operator('a, 'b) = "map";
 
-let mapi: (('a, int) => 'b) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external mapi: (('a, int) => 'b) => operator('a, 'b) = "map";
 
-let mapTo: 'b => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external mapTo: 'b => operator('a, 'b) = "mapTo";
 
-let filter: ('a => bool) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external filter: ('a => bool) => operator('a, 'a) = "filter";
 
-let merge: observable('a) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external merge: observable('a) => operator('a, 'a) = "merge";
 
-let mergeAll: (~concurrent: int=?, unit) => operator(observable('a), 'a);
+[@bs.module "rxjs/operators"]
+external mergeAll: (~concurrent: int=?, unit) => operator(observable('a), 'a) =
+  "mergeAll";
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external concat: array(observable('a)) => operator('a, 'a) = "concat";
 
-let concatAll: unit => operator(observable('a), 'a);
+[@bs.module "rxjs/operators"]
+external concatAll: unit => operator(observable('a), 'a) = "concatAll";
 
-let concatAllPromises: unit => operator(Js.Promise.t('a), 'a);
+[@bs.module "rxjs/operators"]
+external concatAllPromises: unit => operator(Js.Promise.t('a), 'a) =
+  "concatAll";
 
-let debounce: (unit => observable('b)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external debounce: (unit => observable('b)) => operator('a, 'a) = "debounce";
 
-let debounceTime: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external debounceTime: int => operator('a, 'a) = "debounceTime";
 
-let take: int => operator('a, 'a);
+[@bs.module "rxjs/operators"] external take: int => operator('a, 'a) = "take";
 
-let takeUntil: observable('b) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external takeUntil: observable('b) => operator('a, 'a) = "takeUntil";
 
-let takeWhile: ('a => bool) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external takeWhile: ('a => bool) => operator('a, 'a) = "takeWhile";
 
-let delay:
-  [ | `Int(int) | `Float(float) | `Date(Js.Date.t)] => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external delay:
+  ([@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
+  operator('a, 'a) =
+  "delay";
 
-let delayWhen:
+[@bs.module "rxjs/operators"]
+external delayWhen:
   (
     ('a, int) => observable('b),
     ~subscriptionDelay: observable('c)=?,
     unit
   ) =>
-  operator('a, 'a);
+  operator('a, 'a) =
+  "delayWhen";
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external startWith: array('a) => operator('a, 'a) = "startWith";
@@ -46,156 +65,251 @@ external startWith: array('a) => operator('a, 'a) = "startWith";
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external endWith: array('a) => operator('a, 'a) = "endWith";
 
-let pairwise: unit => operator('a, ('a, 'a));
+[@bs.module "rxjs/operators"]
+external pairwise: unit => operator('a, ('a, 'a)) = "pairwise";
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external withLatestFromMany:
   array(observable('a)) => operator('a, array('a)) =
   "withLatestFrom";
 
-let withLatestFrom: observable('b) => operator('a, ('a, 'b));
-let withLatestFrom2:
-  (observable('b), observable('c)) => operator('a, ('a, 'b, 'c));
-let withLatestFrom3:
+[@bs.module "rxjs/operators"]
+external withLatestFrom: observable('b) => operator('a, ('a, 'b)) =
+  "withLatestFrom";
+
+[@bs.module "rxjs/operators"]
+external withLatestFrom2:
+  (observable('b), observable('c)) => operator('a, ('a, 'b, 'c)) =
+  "withLatestFrom";
+
+[@bs.module "rxjs/operators"]
+external withLatestFrom3:
   (observable('b), observable('c), observable('d)) =>
-  operator('a, ('a, 'b, 'c, 'd));
-let withLatestFrom4:
+  operator('a, ('a, 'b, 'c, 'd)) =
+  "withLatestFrom";
+
+[@bs.module "rxjs/operators"]
+external withLatestFrom4:
   (observable('b), observable('c), observable('d), observable('e)) =>
-  operator('a, ('a, 'b, 'c, 'd, 'e));
+  operator('a, ('a, 'b, 'c, 'd, 'e)) =
+  "withLatestFrom";
 
-let every: ('a => bool) => operator('a, bool);
+[@bs.module "rxjs/operators"]
+external every: ('a => bool) => operator('a, bool) = "every";
 
-let catchError: (Js.Json.t => observable('a)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external catchError: (Js.Json.t => observable('a)) => operator('a, 'a) =
+  "catchError";
 
-let retry: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external retry: int => operator('a, 'a) = "retry";
 
-let retryWhen:
-  (observable(Js.Json.t) => observable('b)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external retryWhen:
+  (observable(Js.Json.t) => observable('b)) => operator('a, 'a) =
+  "retryWhen";
 
-let first: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external first: unit => operator('a, 'a) = "first";
 
-let ignoreElements: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external ignoreElements: unit => operator('a, 'a) = "ignoreElements";
 
-let last: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external last: unit => operator('a, 'a) = "last";
 
-let sample: observable('b) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external sample: observable('b) => operator('a, 'a) = "sample";
 
-let sampleTime: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external sampleTime: int => operator('a, 'a) = "sampleTime";
 
-let single: ('a => bool) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external single: ('a => bool) => operator('a, 'a) = "single";
 
-let skip: int => operator('a, 'a);
+[@bs.module "rxjs/operators"] external skip: int => operator('a, 'a) = "skip";
 
-let skipUntil: observable('b) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external skipUntil: observable('b) => operator('a, 'a) = "skipUntil";
 
-let skipWhile: ('a => bool) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external skipWhile: ('a => bool) => operator('a, 'a) = "skipWhile";
 
-let throttle: ('a => observable('b)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external throttle: ('a => observable('b)) => operator('a, 'a) = "throttle";
 
-let throttlePromise: ('a => Js.Promise.t('b)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external throttlePromise: ('a => Js.Promise.t('b)) => operator('a, 'a) =
+  "throttle";
 
-let throttleTime: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external throttleTime: int => operator('a, 'a) = "throttleTime";
 
-let buffer: observable('b) => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external buffer: observable('b) => operator('a, array('a)) = "buffer";
 
-let bufferCount: int => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external bufferCount: int => operator('a, array('a)) = "bufferCount";
 
-let bufferTime:
-  (int, ~bufferCreationInterval: int=?, unit) => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external bufferTime:
+  (int, ~bufferCreationInterval: int=?, unit) => operator('a, array('a)) =
+  "bufferTime";
 
-let bufferToggle:
-  (observable('b), 'b => observable('c)) => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external bufferToggle:
+  (observable('b), 'b => observable('c)) => operator('a, array('a)) =
+  "bufferToggle";
 
-let bufferWhen: (unit => observable('a)) => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external bufferWhen: (unit => observable('a)) => operator('a, array('a)) =
+  "bufferWhen";
 
-let concatMap: ('a => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external concatMap: ('a => observable('b)) => operator('a, 'b) = "concatMap";
 
-let mergeMap: ('a => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external mergeMap: ('a => observable('b)) => operator('a, 'b) = "mergeMap";
 
-let flatMap: ('a => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external flatMap: ('a => observable('b)) => operator('a, 'b) = "flatMap";
 
-let flatMapi: (('a, int) => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external flatMapi: (('a, int) => observable('b)) => operator('a, 'b) =
+  "flatMap";
 
-let concatMapTo: observable('b) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external concatMapTo: observable('b) => operator('a, 'b) = "concatMapTo";
 
-let expand: (('a, int) => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external expand: (('a, int) => observable('b)) => operator('a, 'b) =
+  "expand";
 
-let groupBy: ('a => 'key) => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external groupBy: ('a => 'key) => operator('a, observable('a)) = "groupBy";
 
-let toArray: unit => operator('a, array('a));
+[@bs.module "rxjs/operators"]
+external toArray: unit => operator('a, array('a)) = "toArray";
 
-let reduce: (('b, 'a, int) => 'b, 'b) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external reduce: (('b, 'a, int) => 'b, 'b) => operator('a, 'b) = "reduce";
 
-let scan: (('b, 'a, int) => 'b, 'b) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external scan: (('b, 'a, int) => 'b, 'b) => operator('a, 'b) = "scan";
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external pluck: array(string) => operator('a, Js.Json.t) = "pluck";
 
-let switchMap: (('a, int) => observable('b)) => operator('a, 'b);
+[@bs.module "rxjs/operators"]
+external switchMap: (('a, int) => observable('b)) => operator('a, 'b) =
+  "switchMap";
 
-let window: observable('b) => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external window: observable('b) => operator('a, observable('a)) = "window";
 
-let windowCount:
-  (int, ~startWindowEvery: int=?, unit) => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external windowCount:
+  (int, ~startWindowEvery: int=?, unit) => operator('a, observable('a)) =
+  "windowCount";
 
-let windowToggle:
-  (observable('b), 'b => observable('c)) => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external windowToggle:
+  (observable('b), 'b => observable('c)) => operator('a, observable('a)) =
+  "windowToggle";
 
-let windowTime: int => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external windowTime: int => operator('a, observable('a)) = "windowTime";
 
-let windowWhen: (unit => observable('b)) => operator('a, observable('a));
+[@bs.module "rxjs/operators"]
+external windowWhen:
+  (unit => observable('b)) => operator('a, observable('a)) =
+  "windowWhen";
 
-let tap:
+[@bs.module "rxjs/operators"]
+external tap:
   (
     ~next: 'a => unit=?,
     ~error: Js.Json.t => unit=?,
     ~complete: unit => unit=?,
     unit
   ) =>
-  operator('a, 'a);
+  operator('a, 'a) =
+  "tap";
 
-let finalize: (unit => unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external finalize: (unit => unit) => operator('a, 'a) = "finalize";
 
-let repeat: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external repeat: int => operator('a, 'a) = "repeat";
 
-let timeout:
-  [ | `Int(int) | `Float(float) | `Date(Js.Date.t)] => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external timeout:
+  ([@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)]) =>
+  operator('a, 'a) =
+  "timeout";
 
-let timeoutWith:
-  ([ | `Int(int) | `Float(float) | `Date(Js.Date.t)], observable('a)) =>
-  operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external timeoutWith:
+  (
+    [@bs.unwrap] [ | `Int(int) | `Float(float) | `Date(Js.Date.t)],
+    observable('a)
+  ) =>
+  operator('a, 'a) =
+  "timeoutWith";
 
-let combineAll: unit => operator(observable('a), array('a));
+[@bs.module "rxjs/operators"]
+external combineAll: unit => operator(observable('a), array('a)) =
+  "combineAll";
 
-let defaultIfEmpty: 'a => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external defaultIfEmpty: 'a => operator('a, 'a) = "defaultIfEmpty";
 
-let sequenceEqual: observable('a) => operator('a, bool);
+[@bs.module "rxjs/operators"]
+external sequenceEqual: observable('a) => operator('a, bool) =
+  "sequenceEqual";
 
-let multicast:
-  [ | `Subject(subject('a)) | `Factory(unit => subject('a))] =>
-  operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external multicast:
+  (
+  [@bs.unwrap]
+  [ | `Subject(subject('a)) | `Factory(unit => subject('a))]
+  ) =>
+  operator('a, 'a) =
+  "multicast";
 
-let share: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external share: unit => operator('a, 'a) = "share";
 
-let shareReplay:
-  (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external shareReplay:
+  (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a) =
+  "shareReplay";
 
-let publish: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external publish: unit => operator('a, 'a) = "publish";
 
-let publishBehavior: 'a => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external publishBehavior: 'a => operator('a, 'a) = "publishBehavior";
 
-let publishLast: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external publishLast: unit => operator('a, 'a) = "publishLast";
 
-let publishReplay:
-  (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external publishReplay:
+  (~bufferSize: int=?, ~windowTime: int=?, unit) => operator('a, 'a) =
+  "publishReplay";
 
-let audit: ('a => observable('b)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external audit: ('a => observable('b)) => operator('a, 'a) = "audit";
 
-let auditTime: int => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external auditTime: int => operator('a, 'a) = "auditTime";
 
-let exhaust: unit => operator(observable('a), 'a);
+[@bs.module "rxjs/operators"]
+external exhaust: unit => operator(observable('a), 'a) = "exhaust";
 
-let exhaustMap:
+[@bs.module "rxjs/operators"]
+external exhaustMap:
   (
     ('a, int) => observable('b),
     ~resultSelector: (
@@ -208,28 +322,45 @@ let exhaustMap:
                        =?,
     unit
   ) =>
-  operator('a, 'c);
+  operator('a, 'c) =
+  "exhaustMap";
 
-let elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external elementAt: (int, ~defaultValue: 'a=?, unit) => operator('a, 'a) =
+  "elementAt";
 
 let find: (('a, int, observable('a)) => bool) => operator('a, option('a));
 
-let findIndex: (('a, int, observable('a)) => bool) => operator('a, int);
+[@bs.module "rxjs/operators"]
+external findIndex: (('a, int, observable('a)) => bool) => operator('a, int) =
+  "findIndex";
 
-let isEmpty: unit => operator('a, bool);
+[@bs.module "rxjs/operators"]
+external isEmpty: unit => operator('a, bool) = "isEmpty";
 
-let max: (('a, 'a) => float) => operator('a, 'a);
-let min: (('a, 'a) => float) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external max: (('a, 'a) => float) => operator('a, 'a) = "max";
 
-let switchAll: unit => operator(observable('a), 'a);
+[@bs.module "rxjs/operators"]
+external min: (('a, 'a) => float) => operator('a, 'a) = "min";
 
-let onErrorResumeNext: array(observable('a)) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external switchAll: unit => operator(observable('a), 'a) = "switchAll";
 
-let refCount: unit => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external onErrorResumeNext: array(observable('a)) => operator('a, 'a) =
+  "onErrorResumeNext";
 
-let throwIfEmpty: (~errorFactory: unit => unit=?, unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external refCount: unit => operator('a, 'a) = "refCount";
 
-let timestamp:
+[@bs.module "rxjs/operators"]
+external throwIfEmpty:
+  (~errorFactory: unit => unit=?, unit) => operator('a, 'a) =
+  "throwIfEmpty";
+
+[@bs.module "rxjs/operators"]
+external timestamp:
   unit =>
   operator(
     'a,
@@ -238,7 +369,10 @@ let timestamp:
       "timestamp": float,
       "value": 'a,
     },
-  );
+  ) =
+  "timestamp";
 
-let distinctUntilChanged:
-  (~compare: ('a, 'a) => bool=?, unit) => operator('a, 'a);
+[@bs.module "rxjs/operators"]
+external distinctUntilChanged:
+  (~compare: ('a, 'a) => bool=?, unit) => operator('a, 'a) =
+  "distinctUntilChanged";

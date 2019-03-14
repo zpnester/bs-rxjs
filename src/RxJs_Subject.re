@@ -2,7 +2,6 @@ open RxJs__;
 
 type t('a) = subject('a);
 
-/* do not include MakeSubject, duplicate include MakeObservable+MakeObserver */
 include MakeObservable({
   type t('a) = subject('a);
 });
@@ -13,7 +12,8 @@ include MakeObserver({
 [@bs.module "rxjs"] [@bs.new] external make: unit => subject('a) = "Subject";
 
 external observableToJson__: observable('a) => Js.Json.t = "%identity";
-external subjectFromJsonUnsafe__: Js.Json.t => subject('a) = "%identity";
+external mapOptionUnsafe__: option(Js.Json.t) => option(subject('a)) =
+  "%identity";
 
 [@bs.val] [@bs.module "rxjs"] external subjectCtor: Js.Json.t = "Subject";
 
@@ -33,4 +33,4 @@ let asSubject: observable('a) => option(subject('a)) =
   obs =>
     asSubject_(observableToJson__(obs), subjectCtor)
     ->Js.Nullable.toOption
-    ->Belt.Option.map(subjectFromJsonUnsafe__);
+    ->mapOptionUnsafe__;

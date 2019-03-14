@@ -2,79 +2,89 @@ open RxJs__;
 
 type t('a) = observable('a);
 
-let pipe: (t('a), RxJs_Operator.t('a, 'b)) => observable('b);
+[@bs.send]
+external pipe: (t('a), operator('a, 'b)) => observable('b) = "pipe";
 
-let pipe2:
-  (t('a), RxJs_Operator.t('a, 'b), RxJs_Operator.t('b, 'c)) =>
-  observable('c);
-let pipe3:
+[@bs.send]
+external pipe2:
+  (t('a), operator('a, 'b), operator('b, 'c)) => observable('c) =
+  "pipe";
+
+[@bs.send]
+external pipe3:
+  (t('a), operator('a, 'b), operator('b, 'c), operator('c, 'd)) =>
+  observable('d) =
+  "pipe";
+
+[@bs.send]
+external pipe4:
   (
     t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd)
+    operator('a, 'b),
+    operator('b, 'c),
+    operator('c, 'd),
+    operator('d, 'e)
   ) =>
-  observable('d);
+  observable('e) =
+  "pipe";
 
-let pipe4:
+[@bs.send]
+external pipe5:
   (
     t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd),
-    RxJs_Operator.t('d, 'e)
+    operator('a, 'b),
+    operator('b, 'c),
+    operator('c, 'd),
+    operator('d, 'e),
+    operator('e, 'f)
   ) =>
-  observable('e);
+  observable('f) =
+  "pipe";
 
-let pipe5:
+[@bs.send]
+external pipe6:
   (
     t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd),
-    RxJs_Operator.t('d, 'e),
-    RxJs_Operator.t('e, 'f)
+    operator('a, 'b),
+    operator('b, 'c),
+    operator('c, 'd),
+    operator('d, 'e),
+    operator('e, 'f),
+    operator('f, 'g)
   ) =>
-  observable('f);
+  observable('g) =
+  "pipe";
 
-let pipe6:
+[@bs.send]
+external pipe7:
   (
     t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd),
-    RxJs_Operator.t('d, 'e),
-    RxJs_Operator.t('e, 'f),
-    RxJs_Operator.t('f, 'g)
+    operator('a, 'b),
+    operator('b, 'c),
+    operator('c, 'd),
+    operator('d, 'e),
+    operator('e, 'f),
+    operator('f, 'g),
+    operator('g, 'h)
   ) =>
-  observable('g);
+  observable('h) =
+  "pipe";
 
-let pipe7:
+[@bs.send]
+external pipe8:
   (
     t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd),
-    RxJs_Operator.t('d, 'e),
-    RxJs_Operator.t('e, 'f),
-    RxJs_Operator.t('f, 'g),
-    RxJs_Operator.t('g, 'h)
+    operator('a, 'b),
+    operator('b, 'c),
+    operator('c, 'd),
+    operator('d, 'e),
+    operator('e, 'f),
+    operator('f, 'g),
+    operator('g, 'h),
+    operator('h, 'i)
   ) =>
-  observable('h);
-
-let pipe8:
-  (
-    t('a),
-    RxJs_Operator.t('a, 'b),
-    RxJs_Operator.t('b, 'c),
-    RxJs_Operator.t('c, 'd),
-    RxJs_Operator.t('d, 'e),
-    RxJs_Operator.t('e, 'f),
-    RxJs_Operator.t('f, 'g),
-    RxJs_Operator.t('g, 'h),
-    RxJs_Operator.t('h, 'i)
-  ) =>
-  observable('i);
+  observable('i) =
+  "pipe";
 
 let partition:
   (t('a), ('a, int) => bool) => (observable('a), observable('a));
@@ -89,10 +99,17 @@ let subscribe:
   ) =>
   subscription;
 
-let subscribeObserver: (t('a), observer('a)) => subscription;
+let subscribeWithObserver: (t('a), observer('a)) => subscription;
 
-let create: (observer('a) => unit) => observable('a);
-let createWithTeardown: ((observer('a), unit) => unit) => observable('a);
+/////
+
+[@bs.module "rxjs"] [@bs.scope "Observable"]
+external create: (observer('a) => unit) => observable('a) = "create";
+
+[@bs.module "rxjs"] [@bs.scope "Observable"]
+external createWithTeardown:
+  ([@bs.uncurry] ((observer('a), unit) => unit)) => observable('a) =
+  "create";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external of_: array('a) => observable('a) = "of";
@@ -100,21 +117,33 @@ external of_: array('a) => observable('a) = "of";
 [@bs.module "rxjs"] [@bs.variadic]
 external race: array(observable('a)) => observable('a) = "race";
 
-let fromArray: array('a) => observable('a);
-let fromPromise: Js.Promise.t('a) => observable('a);
-let fromString: string => observable(string);
-let empty: observable('a);
-let never: observable('a);
-let interval: int => observable(int);
+[@bs.module "rxjs"] external fromArray: array('a) => observable('a) = "from";
 
-let zip2: (observable('a), observable('b)) => observable(('a, 'b));
-let zip3:
+[@bs.module "rxjs"]
+external fromPromise: Js.Promise.t('a) => observable('a) = "from";
+[@bs.module "rxjs"]
+external fromString: string => observable(string) = "from";
+
+[@bs.module "rxjs"] external empty: observable('a) = "EMPTY";
+[@bs.module "rxjs"] external never: observable('a) = "NEVER";
+
+[@bs.module "rxjs"] external interval: int => observable(int) = "interval";
+
+[@bs.module "rxjs"]
+external zip2: (observable('a), observable('b)) => observable(('a, 'b)) =
+  "zip";
+
+[@bs.module "rxjs"]
+external zip3:
   (observable('a), observable('b), observable('c)) =>
-  observable(('a, 'b, 'c));
+  observable(('a, 'b, 'c)) =
+  "zip";
 
-let zip4:
+[@bs.module "rxjs"]
+external zip4:
   (observable('a), observable('b), observable('c), observable('d)) =>
-  observable(('a, 'b, 'c, 'd));
+  observable(('a, 'b, 'c, 'd)) =
+  "zip";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external zip: array(observable('a)) => observable(array('a)) = "zip";
@@ -127,47 +156,67 @@ let timer:
   ) =>
   observable(int);
 
-let range: (~start: int, ~count: int) => observable(int);
+[@bs.module "rxjs"]
+external range: (~start: int, ~count: int) => observable(int) = "range";
 
-let fromEvent: (Dom.eventTarget, string) => observable(Dom.event);
+[@bs.module "rxjs"]
+external fromEvent: (Dom.eventTarget, string) => observable(Dom.event) =
+  "fromEvent";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external combineLatest: array(observable('a)) => observable(array('a)) =
   "combineLatest";
 
-let combineLatest2:
-  (observable('a), observable('b)) => observable(('a, 'b));
+[@bs.module "rxjs"]
+external combineLatest2:
+  (observable('a), observable('b)) => observable(('a, 'b)) =
+  "combineLatest";
 
-let combineLatest3:
+[@bs.module "rxjs"]
+external combineLatest3:
   (observable('a), observable('b), observable('c)) =>
-  observable(('a, 'b, 'c));
+  observable(('a, 'b, 'c)) =
+  "combineLatest";
 
-let combineLatest4:
+[@bs.module "rxjs"]
+external combineLatest4:
   (observable('a), observable('b), observable('c), observable('d)) =>
-  observable(('a, 'b, 'c, 'd));
+  observable(('a, 'b, 'c, 'd)) =
+  "combineLatest";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external forkJoin: array(observable('a)) => observable(array('a)) =
   "forkJoin";
 
-let forkJoin2: (observable('a), observable('b)) => observable(('a, 'b));
+[@bs.module "rxjs"]
+external forkJoin2:
+  (observable('a), observable('b)) => observable(('a, 'b)) =
+  "forkJoin";
 
-let forkJoin3:
+[@bs.module "rxjs"]
+external forkJoin3:
   (observable('a), observable('b), observable('c)) =>
-  observable(('a, 'b, 'c));
+  observable(('a, 'b, 'c)) =
+  "forkJoin";
 
-let forkJoin4:
+[@bs.module "rxjs"]
+external forkJoin4:
   (observable('a), observable('b), observable('c), observable('d)) =>
-  observable(('a, 'b, 'c, 'd));
+  observable(('a, 'b, 'c, 'd)) =
+  "forkJoin";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external merge: array(observable('a)) => observable('a) = "merge";
 
-let throwError: 'e => observable('a);
+[@bs.module "rxjs"] external throwError: 'e => observable('a) = "throwError";
 
-let toPromise: observable('a) => Js.Promise.t('a);
+[@bs.send]
+external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
 
 [@bs.module "rxjs"] [@bs.variadic]
 external concat: array(observable('a)) => observable('a) = "concat";
 
-let iif: (unit => bool, observable('a), observable('a)) => observable('a);
+[@bs.module "rxjs"]
+external iif:
+  (unit => bool, observable('a), observable('a)) => observable('a) =
+  "iif";

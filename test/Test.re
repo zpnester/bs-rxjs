@@ -1274,7 +1274,7 @@ of_([|"a", "a", "b", "b", "b", "c"|])
 /* README */
 let observable =
   Observable.create(observer => {
-    open Observer;
+    // open Observer;
 
     observer->next(1);
     observer->next(2);
@@ -1306,7 +1306,7 @@ let o1 = Subject.make();
 o1->Subject.asObservable->pipe2(take(2), toArray())
 ->subscribe(~next=x => expectToEqual(x, [|"a", "b"|]), ());
 
-let o2 = of2("a", "b")->subscribeObserver(o1->Subject.asObserver);
+let o2 = of2("a", "b")->subscribeWithObserver(o1->Subject.asObserver);
 
 
 
