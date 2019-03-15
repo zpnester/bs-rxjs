@@ -7,7 +7,5 @@ include (module type of
     type t('a) = replay_subject('a);
   }));
 
-[@bs.module "rxjs"] [@bs.new]
-external make:
-  (~bufferSize: int=?, ~windowTime: int=?, unit) => replay_subject('a) =
-  "ReplaySubject";
+let make:
+  (~bufferSize: int=?, ~windowTime: int=?, unit) => replay_subject('a);

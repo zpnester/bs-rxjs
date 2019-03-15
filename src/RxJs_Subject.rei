@@ -13,4 +13,4 @@ include (module type of
 
 let asSubject: observable('a) => option(subject('a));
 
-[@bs.module "rxjs"] [@bs.new] external make: unit => subject('a) = "Subject";
+let make: unit => subject('a);

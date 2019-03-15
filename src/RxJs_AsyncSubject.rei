@@ -7,5 +7,4 @@ include (module type of
     type t('a) = async_subject('a);
   }));
 
-[@bs.module "rxjs"] [@bs.new]
-external make: unit => async_subject('a) = "AsyncSubject";
+let make: unit => t('a);
