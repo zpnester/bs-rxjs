@@ -3,7 +3,6 @@ open RxJs__;
 module Observable = RxJs_Observable;
 module Observer = RxJs_Observer;
 module Subscription = RxJs_Subscription;
-module OperatorFunction = RxJs_OperatorFunction;
 module Operators = RxJs_Operators;
 module ConnectableObservable = RxJs_ConnectableObservable;
 module Subject = RxJs_Subject;
@@ -363,5 +362,3 @@ external pairsS:
   (Js.t({..}), scheduler) => Observable.t((string, Js.Json.t)) =
   "pairs";
 
-let partition:
-  (observable('a), ('a, int) => bool) => (observable('a), observable('a));

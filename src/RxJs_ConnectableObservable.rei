@@ -7,6 +7,11 @@ include (module type of
     type t('a) = connectable_observable('a);
   }));
 
+include (module type of
+  MakePipeable({
+    type nonrec t('a) = t('a);
+  }));
+
 [@bs.send] external getSubject: t('a) => subject('a) = "getSubject";
 
 let asConnectableObservable:

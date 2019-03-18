@@ -488,6 +488,7 @@ external multicastS:
   operatorFunction('a, 'b) =
   "multicast";
 
+
 [@bs.module "rxjs/operators"]
 external share: unit => operatorFunction('a, 'a) = "share";
 
@@ -515,17 +516,23 @@ external shareReplayC:
   "shareReplay";
 
 [@bs.module "rxjs/operators"]
-external publish: unit => operatorFunction('a, 'a) = "publish";
+external publish:
+  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  "publish";
 
 [@bs.module "rxjs/operators"]
 external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'a) =
   "publish";
 
 [@bs.module "rxjs/operators"]
-external publishBehavior: 'a => operatorFunction('a, 'a) = "publishBehavior";
+external publishBehavior:
+  'a => unaryFunction(observable('a), connectable_observable('a)) =
+  "publishBehavior";
 
 [@bs.module "rxjs/operators"]
-external publishLast: unit => operatorFunction('a, 'a) = "publishLast";
+external publishLast:
+  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  "publishLast";
 
 [@bs.module "rxjs/operators"]
 external publishReplay:
@@ -649,9 +656,10 @@ external onErrorResumeNext:
   array(observable('a)) => operatorFunction('a, 'a) =
   "onErrorResumeNext";
 
-// TODO connectable
 [@bs.module "rxjs/operators"]
-external refCount: unit => operatorFunction('a, 'a) = "refCount";
+external refCount:
+  unit => unaryFunction(connectable_observable('a), observable('a)) =
+  "refCount";
 
 // TODO return error?
 [@bs.module "rxjs/operators"]
@@ -694,14 +702,14 @@ external distinctUntilChanged:
 external observeOn: scheduler => operatorFunction('a, 'a) = "observeOn";
 
 [@bs.module "rxjs/operators"]
-external observeOnWithDelay: (scheduler, int) => operatorFunction('a, 'a) =
+external observeOnWithDelay: (scheduler, float) => operatorFunction('a, 'a) =
   "observeOn";
 
 [@bs.module "rxjs/operators"]
 external subscribeOn: scheduler => operatorFunction('a, 'a) = "subscribeOn";
 
 [@bs.module "rxjs/operators"]
-external subscribeOnWithDelay: (scheduler, int) => operatorFunction('a, 'a) =
+external subscribeOnWithDelay: (scheduler, float) => operatorFunction('a, 'a) =
   "subscribeOn";
 
 [@bs.module "rxjs/operators"]
@@ -729,3 +737,9 @@ external timeIntervalS:
     },
   ) =
   "timeInterval";
+
+[@bs.module "rxjs/operators"]
+external partition:
+  (('a, int) => bool) =>
+  unaryFunction(observable('a), (observable('a), observable('a))) =
+  "partition";

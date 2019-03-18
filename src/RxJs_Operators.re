@@ -372,7 +372,6 @@ external scan: (('b, 'a) => 'b, 'b) => operatorFunction('a, 'b) = "scan";
 external scani: (('b, 'a, int) => 'b, 'b) => operatorFunction('a, 'b) =
   "scan";
 
-/* partition moved to Observable */
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external pluck: array(string) => operatorFunction('a, Js.Json.t) = "pluck";
@@ -422,7 +421,6 @@ external windowWhen:
   (unit => observable('b)) => operatorFunction('a, observable('a)) =
   "windowWhen";
 
-/* TODO observer */
 [@bs.module "rxjs/operators"]
 external tap:
   (
@@ -533,19 +531,25 @@ external shareReplayC:
   "shareReplay";
 
 [@bs.module "rxjs/operators"]
-external publish: unit => operatorFunction('a, 'a) = "publish";
+external publish:
+  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  "publish";
 
+// not connectable with selector
+// TODO 3rd override?
 [@bs.module "rxjs/operators"]
 external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'a) =
   "publish";
 
-// TODO connectable
 [@bs.module "rxjs/operators"]
-external publishBehavior: 'a => operatorFunction('a, 'a) = "publishBehavior";
+external publishBehavior:
+  'a => unaryFunction(observable('a), connectable_observable('a)) =
+  "publishBehavior";
 
-// TODO connectable
 [@bs.module "rxjs/operators"]
-external publishLast: unit => operatorFunction('a, 'a) = "publishLast";
+external publishLast:
+  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  "publishLast";
 
 [@bs.module "rxjs/operators"]
 external publishReplay:
@@ -634,18 +638,11 @@ external findi_:
   operatorFunction('a, Js.Undefined.t('a)) =
   "find";
 
-let find = (predicate: 'a => bool) =>
-  RxJs_OperatorFunction.make(src =>
-    src->RxJs_Observable.pipe2(find_(predicate), map(Js.Undefined.toOption))
-  );
+let find = (predicate: 'a => bool, src) =>
+  src->RxJs_Observable.pipe2(find_(predicate), map(Js.Undefined.toOption));
 
-let findi = (predicate: ('a, int, observable('a)) => bool) =>
-  RxJs_OperatorFunction.make(src =>
-    src->RxJs_Observable.pipe2(
-      findi_(predicate),
-      map(Js.Undefined.toOption),
-    )
-  );
+let findi = (predicate: ('a, int, observable('a)) => bool, src) =>
+  src->RxJs_Observable.pipe2(findi_(predicate), map(Js.Undefined.toOption));
 
 [@bs.module "rxjs/operators"]
 external findIndex: ('a => bool) => operatorFunction('a, int) = "findIndex";
@@ -679,7 +676,9 @@ external onErrorResumeNext:
   "onErrorResumeNext";
 
 [@bs.module "rxjs/operators"]
-external refCount: unit => operatorFunction('a, 'a) = "refCount";
+external refCount:
+  unit => unaryFunction(connectable_observable('a), observable('a)) =
+  "refCount";
 
 [@bs.module "rxjs/operators"]
 external throwIfEmpty:
@@ -723,14 +722,14 @@ external distinctUntilChanged:
 external observeOn: scheduler => operatorFunction('a, 'a) = "observeOn";
 
 [@bs.module "rxjs/operators"]
-external observeOnWithDelay: (scheduler, int) => operatorFunction('a, 'a) =
+external observeOnWithDelay: (scheduler, float) => operatorFunction('a, 'a) =
   "observeOn";
 
 [@bs.module "rxjs/operators"]
 external subscribeOn: scheduler => operatorFunction('a, 'a) = "subscribeOn";
 
 [@bs.module "rxjs/operators"]
-external subscribeOnWithDelay: (scheduler, int) => operatorFunction('a, 'a) =
+external subscribeOnWithDelay: (scheduler, float) => operatorFunction('a, 'a) =
   "subscribeOn";
 
 [@bs.module "rxjs/operators"]
@@ -758,3 +757,9 @@ external timeIntervalS:
     },
   ) =
   "timeInterval";
+
+[@bs.module "rxjs/operators"]
+external partition:
+  (('a, int) => bool) =>
+  unaryFunction(observable('a), (observable('a), observable('a))) =
+  "partition";

@@ -3,7 +3,6 @@ open RxJs__;
 module Observable = RxJs_Observable;
 module Observer = RxJs_Observer;
 module Subscription = RxJs_Subscription;
-module OperatorFunction = RxJs_OperatorFunction;
 module Operators = RxJs_Operators;
 module ConnectableObservable = RxJs_ConnectableObservable;
 module Subject = RxJs_Subject;
@@ -362,19 +361,3 @@ external pairsS:
   (Js.t({..}), scheduler) => Observable.t((string, Js.Json.t)) =
   "pairs";
 
-// partition cannot be typed as operatorFunction
-
-type partition__('a);
-[@bs.module "rxjs/operators"]
-external partition__: (('a, int) => bool) => partition__('a) = "partition";
-
-[@bs.send]
-external pipePartition__:
-  (observable('a), partition__('a)) => (observable('a), observable('a)) =
-  "pipe";
-
-// 'thisArg' param skipped
-let partition =
-    (self: observable('a), predicate: ('a, int) => bool)
-    : (observable('a), observable('a)) =>
-  self->pipePartition__(partition__(predicate));
