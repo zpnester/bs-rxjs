@@ -1,13 +1,15 @@
 type observer('a);
 type observable('a);
 type connectable_observable('a);
-type operator('a, 'b);
+type operatorFunction('a, 'b);
 type subscription;
 type subject('a);
 type async_subject('a);
 type behavior_subject('a);
 type replay_subject('a);
 type websocket_subject('a);
+
+type scheduler;
 
 module type TypeImpl = {type t('a);};
 

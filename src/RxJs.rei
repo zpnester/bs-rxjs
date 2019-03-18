@@ -111,6 +111,7 @@ external range:
   observable(int) =
   "range";
 
+// TODO
 [@bs.module "rxjs"]
 external fromEvent: (Dom.eventTarget, string) => observable(Dom.event) =
   "fromEvent";
@@ -362,19 +363,5 @@ external pairsS:
   (Js.t({..}), scheduler) => Observable.t((string, Js.Json.t)) =
   "pairs";
 
-// partition cannot be typed as operatorFunction
-
-type partition__('a);
-[@bs.module "rxjs/operators"]
-external partition__: (('a, int) => bool) => partition__('a) = "partition";
-
-[@bs.send]
-external pipePartition__:
-  (observable('a), partition__('a)) => (observable('a), observable('a)) =
-  "pipe";
-
-// 'thisArg' param skipped
-let partition =
-    (self: observable('a), predicate: ('a, int) => bool)
-    : (observable('a), observable('a)) =>
-  self->pipePartition__(partition__(predicate));
+let partition:
+  (observable('a), ('a, int) => bool) => (observable('a), observable('a));
