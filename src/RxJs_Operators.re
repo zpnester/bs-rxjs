@@ -538,7 +538,7 @@ external publish:
 // not connectable with selector
 // TODO 3rd override?
 [@bs.module "rxjs/operators"]
-external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'a) =
+external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'b) =
   "publish";
 
 [@bs.module "rxjs/operators"]

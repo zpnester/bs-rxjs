@@ -658,25 +658,25 @@ o1
 
 let o1 =
   create(obs => {
-    obs->Observer.next("a");
-    obs->Observer.next("b");
+    obs->Observer.next(1);
+    obs->Observer.next(2);
 
     Js.Global.setTimeout(
       () => {
-        obs->Observer.next("c");
-        obs->Observer.next("d");
+        obs->Observer.next(3);
+        obs->Observer.next(4);
         obs->Observer.complete;
       },
       500,
     )
     |> ignore;
   })
-  ->pipe1(publishS(map(x => x ++ x)));
+  ->pipe1(publishS(map(x => string_of_int(x) ++ string_of_int(x))));
 
 o1
 ->pipe1(toArray())
 ->subscribe(
-    ~next=arr => expectToEqual(arr, [|"aa", "bb", "cc", "dd"|]),
+    ~next=arr => expectToEqual(arr, [|"11", "22", "33", "44"|]),
     (),
   );
 
@@ -1700,3 +1700,10 @@ o1
 
 let o1 = of2("a", "b");
 o1->pipe1(first("z"))->subscribe(~next=x => expectToEqual(x, "a"), ());
+
+
+let o1 = of1(1);
+
+let a = o1->pipe3(_ => "5", x => x->int_of_string, x => x + x);
+expectToEqual(a, 10);
+

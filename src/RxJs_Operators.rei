@@ -521,8 +521,9 @@ external publish:
   "publish";
 
 [@bs.module "rxjs/operators"]
-external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'a) =
+external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'b) =
   "publish";
+
 
 [@bs.module "rxjs/operators"]
 external publishBehavior:
