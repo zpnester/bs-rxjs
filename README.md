@@ -7,7 +7,7 @@ RxJS v6 bindings for BuckleScript
 
 ```reason
 let observable =
-  Observable.create(observer => {
+  Observable.make(observer => {
     open Observer;
 
     observer->next(1);

@@ -11,9 +11,9 @@ type t = subscription;
 [@bs.new] [@bs.module "rxjs"] external make: unit => t = "Subscription";
 
 [@bs.new] [@bs.module "rxjs"]
-external makeWithUnsubscribe: (unit => unit) => t = "Subscription";
+external makeU: (unit => unit) => t = "Subscription";
 
 [@bs.send] external add: (t, t) => t = "add";
-[@bs.send] external addTeardown: (t, unit => unit) => t = "add";
+[@bs.send] external addT: (t, unit => unit) => t = "add";
 
 [@bs.send] external remove: (t, t) => unit = "remove";

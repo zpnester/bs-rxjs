@@ -721,6 +721,8 @@ external distinctUntilChanged:
 [@bs.module "rxjs/operators"]
 external observeOn: scheduler => operatorFunction('a, 'a) = "observeOn";
 
+// keep name withDelay
+
 [@bs.module "rxjs/operators"]
 external observeOnWithDelay: (scheduler, float) => operatorFunction('a, 'a) =
   "observeOn";

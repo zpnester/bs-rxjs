@@ -34,18 +34,14 @@ let subscribe =
 };
 
 [@bs.send]
-external subscribeWithObserver_: (t('a), observer('a)) => subscription =
+external subscribeO: (t('a), observer('a)) => subscription =
   "subscribe";
 
-let subscribeWithObserver = (self: t('a), observer: observer('a)) =>
-  subscribeWithObserver_(self, observer);
-
-/////////
 
 [@bs.module "rxjs"] [@bs.scope "Observable"]
-external create: (observer('a) => unit) => observable('a) = "create";
+external make: (observer('a) => unit) => observable('a) = "create";
 
 [@bs.module "rxjs"] [@bs.scope "Observable"]
-external createWithTeardown:
-  ([@bs.uncurry] ((observer('a), unit) => unit)) => observable('a) =
+external makeT:
+  ([@bs.uncurry] observer('a) => (unit => unit)) => observable('a) =
   "create";

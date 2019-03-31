@@ -538,7 +538,7 @@ fromArray([|1, 5, 6|])
 ->pipe1(sequenceEqual(o1, ~comparator, ()))
 ->subscribe(~next=x => expectToEqual(x, false), ());
 
-create(obs => {
+Observable.make(obs => {
   obs->Observer.next("q");
   Js.Global.setTimeout(
     () => {
@@ -597,7 +597,7 @@ o1
 /* bad test */
 let i1 = ref(0);
 let o2 =
-  create(obs =>
+  Observable.make(obs =>
     if (i1^ == 0) {
       i1 := 1;
       failwith("f");
@@ -623,7 +623,7 @@ concat([|o1, o2, o3|])
   );
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -657,7 +657,7 @@ o1
 /////////////////
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next(1);
     obs->Observer.next(2);
 
@@ -683,7 +683,7 @@ o1
 //////////////
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -722,7 +722,7 @@ o1
 let c = ref(false);
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -754,7 +754,7 @@ Js.Global.setTimeout(() => expectToEqual(c^, true), 100) |> ignore;
 
 /* test does not verify that params are working (bufferSize and windowTime) */
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -788,7 +788,7 @@ o1
 let s1 = Subject.make();
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -826,7 +826,7 @@ o1
 let s1 = Subject.make();
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -853,7 +853,7 @@ o1
 ////////////////
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     obs->Observer.next("a");
     obs->Observer.next("b");
 
@@ -874,7 +874,7 @@ o1
 ->pipe1(toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
 
-create(obs => {
+Observable.make(obs => {
   obs->Observer.next("a");
   obs->Observer.next("b");
 
@@ -910,7 +910,7 @@ interval(50.0)
 ->pipe3(auditTimeS(100.0, asapScheduler), take(10), toArray())
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 5, true), ());
 
-create(obs => {
+Observable.make(obs => {
   obs->Observer.next(1);
   obs->Observer.next(2);
   Js.Global.setTimeout(
@@ -929,7 +929,7 @@ create(obs => {
   )
 ->subscribe(~next=arr => expectToEqual(arr, [|3|]), ());
 
-create(obs => {
+Observable.make(obs => {
   obs->Observer.next(1);
   obs->Observer.next(2);
   Js.Global.setTimeout(
@@ -1058,7 +1058,7 @@ interval(220.0)
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length == 2, true), ());
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     let t =
       interval(100.0)->subscribe(~next=i => obs->Observer.next(i), ());
 
@@ -1090,7 +1090,7 @@ o1
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, false), ());
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     let t =
       interval(500.0)->subscribe(~next=i => obs->Observer.next(i), ());
 
@@ -1236,7 +1236,7 @@ o1
   );
 
 let o1 =
-  create(obs => {
+  Observable.make(obs => {
     let t =
       interval(100.0)->subscribe(~next=i => obs->Observer.next(i), ());
 
@@ -1399,7 +1399,7 @@ o1
 ->subscribe(~next=x => expectToEqual(x, [|"a", "b", "c", "d", "e"|]), ());
 
 let op1 = src =>
-  createWithTeardown(obs => {
+  Observable.makeT(obs => {
     let s =
       src->subscribe(
         ~next=
@@ -1436,7 +1436,7 @@ of3("a", "b", "c")
 ->subscribe(~next=x => expectToEqual(x, [|"a!a!", "b!b!", "c!c!"|]), ());
 
 let o1 =
-  createWithTeardown(obs => {
+  Observable.makeT(obs => {
     obs->Observer.next("a");
     () => Js.log("teardown OK");
   });
@@ -1459,7 +1459,7 @@ empty
 ->subscribe(~next=x => expectToEqual(x, "x"), ());
 
 /* empty does not work */
-create(_ => ())
+Observable.make(_ => ())
 ->pipe1(timeoutWithS(`Number(100.0), of1("a"), queueScheduler))
 ->subscribe(
     ~next=x => expectToEqual(x, "a"),
@@ -1497,7 +1497,7 @@ of_([|"a", "a", "b", "b", "b", "c"|])
 
 /* README */
 let observable =
-  create(observer => {
+  Observable.make(observer => {
     // open Observer;
 
     observer->next(1);
@@ -1530,7 +1530,7 @@ o1
 ->pipe2(take(2), toArray())
 ->subscribe(~next=x => expectToEqual(x, [|"a", "b"|]), ());
 
-of2("a", "b")->subscribeWithObserver(o1->Subject.asObserver);
+of2("a", "b")->subscribeO(o1->Subject.asObserver);
 
 let o1 = of3("a", "b", "c");
 let o2 = of2("d", "e");
@@ -1622,16 +1622,16 @@ expectToEqual(s2->Subscription.closed, false);
 let tearedDown = ref(false);
 let tearedDown2 = ref(false);
 
-let s4 = Subscription.makeWithUnsubscribe(() => tearedDown2 := true);
+let s4 = Subscription.makeU(() => tearedDown2 := true);
 
-let s1 = Subscription.makeWithUnsubscribe(() => Js.log("sub unsub"));
+let s1 = Subscription.makeU(() => Js.log("sub unsub"));
 let s3 = s1->add(s2);
 expectToBe(s2, s3);
 
 s1->add(s4);
 s1->remove(s4);
 
-s1->addTeardown(() => tearedDown := true);
+s1->addT(() => tearedDown := true);
 
 expectToEqual(s1->Subscription.closed, false);
 s1->Subscription.unsubscribe;
