@@ -387,7 +387,7 @@ external switchMapi:
   "switchMap";
 
 [@bs.module "rxjs/operators"]
-external switchMapTo: observable('a) => operatorFunction('a, 'a) =
+external switchMapTo: observable('b) => operatorFunction('a, 'b) =
   "switchMapTo";
 
 [@bs.module "rxjs/operators"]

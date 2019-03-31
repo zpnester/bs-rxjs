@@ -1186,7 +1186,7 @@ of2("a", "b")
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "0", "b", "1"|]), ());
 
 let o2 = of2("c", "d");
-of2("a", "b")
+of2(3, 4)
 ->pipe2(switchMapTo(o2), toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"c", "d", "c", "d"|]), ());
 
