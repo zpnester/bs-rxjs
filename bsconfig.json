@@ -1,6 +1,5 @@
 {
   "name": "@zpnester/bs-rxjs",
-  "version": "0.0.16",
   "sources": [
     {
       "dir": "src",

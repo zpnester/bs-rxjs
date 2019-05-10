@@ -222,7 +222,18 @@ external skipWhilei: (('a, int) => bool) => operatorFunction('a, 'a) =
   "skipWhile";
 
 [@bs.module "rxjs/operators"]
-external throttle: ('a => observable('b)) => operatorFunction('a, 'a) =
+external throttle:
+  (
+    'a => observable('b),
+    ~config: {
+               .
+               "leading": bool,
+               "trailing": bool,
+             }
+               =?,
+    unit
+  ) =>
+  operatorFunction('a, 'a) =
   "throttle";
 
 [@bs.module "rxjs/operators"]
@@ -371,7 +382,6 @@ external scan: (('b, 'a) => 'b, 'b) => operatorFunction('a, 'b) = "scan";
 [@bs.module "rxjs/operators"]
 external scani: (('b, 'a, int) => 'b, 'b) => operatorFunction('a, 'b) =
   "scan";
-
 
 [@bs.module "rxjs/operators"] [@bs.variadic]
 external pluck: array(string) => operatorFunction('a, Js.Json.t) = "pluck";

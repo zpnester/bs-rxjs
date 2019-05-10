@@ -34,14 +34,12 @@ let subscribe =
 };
 
 [@bs.send]
-external subscribeO: (t('a), observer('a)) => subscription =
-  "subscribe";
-
+external subscribeO: (t('a), observer('a)) => subscription = "subscribe";
 
 [@bs.module "rxjs"] [@bs.scope "Observable"]
 external make: (observer('a) => unit) => observable('a) = "create";
 
 [@bs.module "rxjs"] [@bs.scope "Observable"]
 external makeT:
-  ([@bs.uncurry] observer('a) => (unit => unit)) => observable('a) =
+  ([@bs.uncurry] ((observer('a), unit) => unit)) => observable('a) =
   "create";

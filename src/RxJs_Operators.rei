@@ -216,7 +216,18 @@ external skipWhilei: (('a, int) => bool) => operatorFunction('a, 'a) =
   "skipWhile";
 
 [@bs.module "rxjs/operators"]
-external throttle: ('a => observable('b)) => operatorFunction('a, 'a) =
+external throttle:
+  (
+    'a => observable('b),
+    ~config: {
+               .
+               "leading": bool,
+               "trailing": bool,
+             }
+               =?,
+    unit
+  ) =>
+  operatorFunction('a, 'a) =
   "throttle";
 
 [@bs.module "rxjs/operators"]
@@ -251,7 +262,7 @@ external throttleTime:
   "throttleTime";
 
 [@bs.module "rxjs/operators"]
-external buffer: observable('b) => operatorFunction('a, array('a)) =
+external buffer: observable('a) => operatorFunction('a, array('a)) =
   "buffer";
 
 [@bs.module "rxjs/operators"]
@@ -488,7 +499,6 @@ external multicastS:
   operatorFunction('a, 'b) =
   "multicast";
 
-
 [@bs.module "rxjs/operators"]
 external share: unit => operatorFunction('a, 'a) = "share";
 
@@ -523,7 +533,6 @@ external publish:
 [@bs.module "rxjs/operators"]
 external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'b) =
   "publish";
-
 
 [@bs.module "rxjs/operators"]
 external publishBehavior:

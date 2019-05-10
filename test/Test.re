@@ -869,7 +869,6 @@ let o1 =
   })
   ->pipe1(share());
 
-
 o1
 ->pipe1(toArray())
 ->subscribe(~next=arr => expectToEqual(arr, [|"a", "b", "c", "d"|]), ());
@@ -1014,7 +1013,7 @@ range(~start=1, ~count=20, ())
 /* bad test */
 timer(~dueTime=`Number(0.00), ~period=200.0, ())
 ->pipe3(
-    throttle(_ => timer(~dueTime=`Number(210.0), ())),
+    throttle(_ => timer(~dueTime=`Number(210.0), ()), ()),
     take(2),
     toArray(),
   )
@@ -1701,9 +1700,7 @@ o1
 let o1 = of2("a", "b");
 o1->pipe1(first("z"))->subscribe(~next=x => expectToEqual(x, "a"), ());
 
-
 let o1 = of1(1);
 
 let a = o1->pipe3(_ => "5", x => x->int_of_string, x => x + x);
 expectToEqual(a, 10);
-

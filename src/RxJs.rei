@@ -361,4 +361,3 @@ external pairs: Js.t({..}) => Observable.t((string, Js.Json.t)) = "pairs";
 external pairsS:
   (Js.t({..}), scheduler) => Observable.t((string, Js.Json.t)) =
   "pairs";
-
