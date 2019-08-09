@@ -172,7 +172,7 @@ o1
 ->subscribe(~next=x => expectToEqual(x, false), ());
 
 let o1 =
-  concat([|of1("a"), throwError("oops")|])->pipe1(retry(~count=3, ()));
+  concat([|of1("a"), throwError("oops")|])->pipe1(retry1(~count=3));
 o1->subscribe(
   ~next=x => Js.log(x),
   ~error=e => expectToEqual(e, Js.Json.string("oops")),
@@ -194,9 +194,29 @@ o1
   );
 
 range2(~start=100, ~count=30)
-->pipe2(bufferCount(7), first([||]))
+->pipe2(bufferCount(7), first1D([||]))
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|100, 101, 102, 103, 104, 105, 106|]),
+    (),
+  );
+
+let o1 = of4(1, 2, 3, 4);
+o1
+->pipe1(first1(x => x == 3))
+->subscribe(~next=x => expectToEqual(x, 3), ());
+
+let o1 = of4(1, 2, 3, 4);
+o1
+->pipe1(first2(x => x == 5, 6))
+->subscribe(~next=x => expectToEqual(x, 6), ());
+
+let o1 = of4(1, 2, 3, 4);
+o1
+->pipe1(first1(x => x == 5))
+->subscribe(
+    ~next=x => expectToEqual(x, 6),
+    ~error=e => (),
+    //    failwith("should fail")
     (),
   );
 
@@ -496,10 +516,10 @@ o1
 
 let o1 = of1("A");
 let o2 = of1("B");
-iif(() => false, ~trueResult=o1, ~falseResult=o2, ())
+iif(() => false, ~true_=o1, ~false_=o2)
 ->subscribe(~next=x => expectToEqual(x, "B"), ());
 
-iifP(() => true, ~trueResult=resolve("C"), ())
+iifP(() => true, ~true_=resolve("C"), ~false_=resolve(""))
 ->subscribe(~next=x => expectToEqual(x, "C"), ());
 
 let o1 = fromArray([|4, 5, 6|]);
@@ -661,7 +681,7 @@ let o1 =
     |> ignore;
     None;
   })
-  ->pipe1(publishS(map(x => string_of_int(x) ++ string_of_int(x))));
+  ->pipe1(publish1(map(x => string_of_int(x) ++ string_of_int(x))));
 
 o1
 ->pipe1(toArray())
@@ -948,11 +968,11 @@ of1("a")
   );
 
 of3("a", "b", "c")
-->pipe1(last("d"))
+->pipe1(last1D("d"))
 ->subscribe(~next=x => expectToEqual(x, "c"), ());
 
 of3("a", "b", "c")
-->pipe1(lasti(~predicate=(x, _, _) => x == "x", "d"))
+->pipe1(lasti2((x, _, _) => x == "x", "d"))
 ->subscribe(~next=x => expectToEqual(x, "d"), ());
 
 /* bad test */
@@ -962,7 +982,7 @@ interval(500.0)
 
 /* bad test */
 interval(500.0)
-->pipe3(sampleTimeS(1000.0, queueScheduler), take(2), toArray())
+->pipe3(sampleTime2(1000.0, queueScheduler), take(2), toArray())
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, true), ());
 
 range2(~start=1, ~count=20)
@@ -1033,7 +1053,7 @@ interval(220.0)
 ->pipe2(
     bufferTime4(
       1000.0,
-      ~bufferCreationInterval=500,
+      ~bufferCreationInterval=Some(500.0),
       ~maxBufferSize=2,
       queueScheduler,
     ),
@@ -1066,12 +1086,12 @@ o1
         timer1(500.0);
       },
     ),
-    first([||]),
+    first1D([||]),
   )
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, true), ());
 
 o1
-->pipe2(bufferToggleP(resolve("a"), _ => resolve("b")), first([||]))
+->pipe2(bufferToggleP(resolve("a"), _ => resolve("b")), first1D([||]))
 ->subscribe(~next=arr => expectToEqual(arr->Js.Array.length > 0, false), ());
 
 let o1 =
@@ -1268,7 +1288,7 @@ interval(20.0)
   );
 
 of1("del")
-->pipe1(delay(`Number(10.0)))
+->pipe1(delay(10.0))
 ->subscribe(~next=x => expectToEqual(x, "del"), ());
 
 /* DO NOT DELETE */
@@ -1283,6 +1303,14 @@ of1("a")
 of2("a", "b")
 ->pipe1(elementAt(1))
 ->subscribe(~next=x => expectToEqual(x, "b"), ());
+
+of2("a", "b")
+->pipe1(elementAt(2))
+->subscribe(
+    ~next=x => expectToEqual(x, "y"),
+    ~error=_ => Js.log("expected error"),
+    (),
+  );
 
 of2("a", "b")
 ->pipe1(elementAt2(2, ~defaultValue="y"))
@@ -1664,21 +1692,20 @@ timer2(0.0, ~period=20.0)
 let o1 = of2("a", "b");
 o1
 ->pipe1(
-    firsti(
-      ~predicate=
-        (x, i, o) => {
-          expectToEqual(x->Js.typeof, "string");
-          expectToEqual(i->Js.typeof, "number");
-          expectToEqual(o->Js.typeof, "object");
-          x == "c";
-        },
+    firsti2(
+      (x, i, o) => {
+        expectToEqual(x->Js.typeof, "string");
+        expectToEqual(i->Js.typeof, "number");
+        expectToEqual(o->Js.typeof, "object");
+        x == "c";
+      },
       "z",
     ),
   )
 ->subscribe(~next=x => expectToEqual(x, "z"), ());
 
 let o1 = of2("a", "b");
-o1->pipe1(first("z"))->subscribe(~next=x => expectToEqual(x, "a"), ());
+o1->pipe1(first1D("z"))->subscribe(~next=x => expectToEqual(x, "a"), ());
 
 let o1 = of1(1);
 

@@ -61,21 +61,21 @@ external takeWhilei: (('a, int) => bool) => operatorFunction('a, 'a) =
   "takeWhile";
 
 [@bs.module "rxjs/operators"]
-external delay:
-  ([@bs.unwrap] [ | `Number(float) | `Date(Js.Date.t)]) =>
-  operatorFunction('a, 'a) =
-  "delay";
+external delay: float => operatorFunction('a, 'a) = "delay";
 
 [@bs.module "rxjs/operators"]
-external delay2:
-  ([@bs.unwrap] [ | `Number(float) | `Date(Js.Date.t)], scheduler) =>
-  operatorFunction('a, 'a) =
+external delayD: Js.Date.t => operatorFunction('a, 'a) = "delay";
+
+[@bs.module "rxjs/operators"]
+external delay2: (float, scheduler) => operatorFunction('a, 'a) = "delay";
+
+[@bs.module "rxjs/operators"]
+external delay2D: (Js.Date.t, scheduler) => operatorFunction('a, 'a) =
   "delay";
 
-// 'b
 [@bs.module "rxjs/operators"]
 external delayWhen2:
-  (('a, int) => observable('b), observable('c)) => operatorFunction('a, 'a) =
+  (('a, int) => observable('z), observable('c)) => operatorFunction('a, 'a) =
   "delayWhen";
 
 [@bs.module "rxjs/operators"]
@@ -159,7 +159,10 @@ external catchError:
   "catchError";
 
 [@bs.module "rxjs/operators"]
-external retry: (~count: int=?, unit) => operatorFunction('a, 'a) = "retry";
+external retry1: (~count: int) => operatorFunction('a, 'a) = "retry";
+
+[@bs.module "rxjs/operators"]
+external retry: unit => operatorFunction('a, 'a) = "retry";
 
 /* 'b not used */
 [@bs.module "rxjs/operators"]
@@ -168,27 +171,72 @@ external retryWhen:
   "retryWhen";
 
 [@bs.module "rxjs/operators"]
-external first: (~predicate: 'a => bool=?, 'a) => operatorFunction('a, 'a) =
+external first2: ('a => bool, 'a) => operatorFunction('a, 'a) = "first";
+
+// 1 here is final arity not original
+
+[@bs.module "rxjs/operators"]
+external first1D:
+  ([@bs.as {json|null|json}] _, 'a) => operatorFunction('a, 'a) =
   "first";
 
 [@bs.module "rxjs/operators"]
-external firsti:
-  (~predicate: ('a, int, observable('a)) => bool=?, 'a) =>
-  operatorFunction('a, 'a) =
+external first1: ('a => bool) => operatorFunction('a, 'a) = "first";
+
+[@bs.module "rxjs/operators"]
+external first: unit => operatorFunction('a, 'a) = "first";
+
+[@bs.module "rxjs/operators"]
+external firsti2:
+  (('a, int, observable('a)) => bool, 'a) => operatorFunction('a, 'a) =
+  "first";
+
+// 1 here is final arity not original
+
+[@bs.module "rxjs/operators"]
+external firsti1D:
+  ([@bs.as {json|null|json}] _, 'a) => operatorFunction('a, 'a) =
+  "first";
+
+[@bs.module "rxjs/operators"]
+external firsti1:
+  (('a, int, observable('a)) => bool) => operatorFunction('a, 'a) =
   "first";
 
 [@bs.module "rxjs/operators"]
 external ignoreElements: unit => operatorFunction('a, 'a) = "ignoreElements";
 
 [@bs.module "rxjs/operators"]
-external last: (~predicate: 'a => bool=?, 'a) => operatorFunction('a, 'a) =
+external last2: ('a => bool, 'a) => operatorFunction('a, 'a) = "last";
+
+[@bs.module "rxjs/operators"]
+external last1: ('a => bool) => operatorFunction('a, 'a) = "last";
+
+// 1 here is final arity not original
+
+[@bs.module "rxjs/operators"]
+external last1D: ([@bs.as {json|null|json}] _, 'a) => operatorFunction('a, 'a) =
   "last";
 
 [@bs.module "rxjs/operators"]
-external lasti:
-  (~predicate: ('a, int, observable('a)) => bool=?, 'a) =>
-  operatorFunction('a, 'a) =
+external lasti2:
+  (('a, int, observable('a)) => bool, 'a) => operatorFunction('a, 'a) =
   "last";
+
+[@bs.module "rxjs/operators"]
+external lasti1:
+  (('a, int, observable('a)) => bool) => operatorFunction('a, 'a) =
+  "last";
+
+// 1 here is final arity not original
+
+[@bs.module "rxjs/operators"]
+external lasti1D:
+  ([@bs.as {json|null|json}] _, 'a) => operatorFunction('a, 'a) =
+  "last";
+
+[@bs.module "rxjs/operators"]
+external last: unit => operatorFunction('a, 'a) = "last";
 
 /* 'b not used */
 [@bs.module "rxjs/operators"]
@@ -198,7 +246,7 @@ external sample: observable('b) => operatorFunction('a, 'a) = "sample";
 external sampleTime: float => operatorFunction('a, 'a) = "sampleTime";
 
 [@bs.module "rxjs/operators"]
-external sampleTimeS: (float, scheduler) => operatorFunction('a, 'a) =
+external sampleTime2: (float, scheduler) => operatorFunction('a, 'a) =
   "sampleTime";
 
 [@bs.module "rxjs/operators"]
@@ -271,11 +319,13 @@ external bufferCount2:
 [@bs.module "rxjs/operators"]
 external bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
 
+// begin bufferTime
+
 [@bs.module "rxjs/operators"]
 external bufferTime4:
   (
     float,
-    ~bufferCreationInterval: int,
+    ~bufferCreationInterval: option(float),
     ~maxBufferSize: int,
     RxJs_Scheduler.t
   ) =>
@@ -284,19 +334,20 @@ external bufferTime4:
 
 [@bs.module "rxjs/operators"]
 external bufferTime3:
-  (float, ~bufferCreationInterval: int, ~maxBufferSize: int) =>
+  (float, ~bufferCreationInterval: option(float), ~maxBufferSize: int) =>
   operatorFunction('a, array('a)) =
   "bufferTime";
 
 [@bs.module "rxjs/operators"]
 external bufferTime3S:
-  (float, ~bufferCreationInterval: int, scheduler) =>
+  (float, ~bufferCreationInterval: option(float), scheduler) =>
   operatorFunction('a, array('a)) =
   "bufferTime";
 
+// keep bufferCreationInterval non option here but not in others
 [@bs.module "rxjs/operators"]
 external bufferTime2:
-  (float, ~bufferCreationInterval: int) => operatorFunction('a, array('a)) =
+  (float, ~bufferCreationInterval: float) => operatorFunction('a, array('a)) =
   "bufferTime";
 
 [@bs.module "rxjs/operators"]
@@ -305,6 +356,8 @@ external bufferTime2S: (float, scheduler) => operatorFunction('a, array('a)) =
 
 [@bs.module "rxjs/operators"]
 external bufferTime: float => operatorFunction('a, array('a)) = "bufferTime";
+
+// end of bufferTime
 
 [@bs.module "rxjs/operators"]
 external bufferToggle:
@@ -404,10 +457,66 @@ external expandi2:
 external expandi: (('a, int) => observable('b)) => operatorFunction('a, 'b) =
   "expand";
 
-/* TODO 3 more optional params */
+// todo GroupedObservable
+
+// begin groupBy
+
+// todo rewrite if null won't work (if undefined needed)
+
+[@bs.module "rxjs/operators"]
+external groupBy4R:
+  (
+    'a => 'key,
+    'a => 'r,
+    observable('r) => observable('z),
+    unit => subject('r)
+  ) =>
+  operatorFunction('a, observable('r)) =
+  "groupBy";
+
+[@bs.module "rxjs/operators"]
+external groupBy4:
+  (
+    'a => 'key,
+    [@bs.as {json|null|json}] _,
+    observable('a) => observable('z),
+    unit => subject('a)
+  ) =>
+  operatorFunction('a, observable('a)) =
+  "groupBy";
+
+[@bs.module "rxjs/operators"]
+external groupBy3R:
+  ('a => 'key, 'a => 'r, observable('r) => observable('z)) =>
+  operatorFunction('a, observable('r)) =
+  "groupBy";
+
+[@bs.module "rxjs/operators"]
+external groupBy3:
+  (
+    'a => 'key,
+    [@bs.as {json|null|json}] _,
+    observable('a) => observable('z)
+  ) =>
+  operatorFunction('a, observable('a)) =
+  "groupBy";
+
+[@bs.module "rxjs/operators"]
+external groupBy2R:
+  ('a => 'key, 'a => 'r) => operatorFunction('a, observable('r)) =
+  "groupBy";
+
+[@bs.module "rxjs/operators"]
+external groupBy2:
+  ('a => 'key, [@bs.as {json|null|json}] _) =>
+  operatorFunction('a, observable('a)) =
+  "groupBy";
+
 [@bs.module "rxjs/operators"]
 external groupBy: ('a => 'key) => operatorFunction('a, observable('a)) =
   "groupBy";
+
+// end of groupBy
 
 [@bs.module "rxjs/operators"]
 external toArray: unit => operatorFunction('a, array('a)) = "toArray";
@@ -456,10 +565,9 @@ external windowCount2:
 external windowCount: int => operatorFunction('a, observable('a)) =
   "windowCount";
 
-/* 'c not used */
 [@bs.module "rxjs/operators"]
 external windowToggle:
-  (observable('b), 'b => observable('c)) =>
+  (observable('b), 'b => observable('z)) =>
   operatorFunction('a, observable('a)) =
   "windowToggle";
 
@@ -489,7 +597,7 @@ external tap:
   "tap";
 
 [@bs.module "rxjs/operators"]
-external tapWithObserver: observer('a) => operatorFunction('a, 'a) = "tap";
+external tapO: observer('a) => operatorFunction('a, 'a) = "tap";
 
 /* TODO Notification */
 /* dematerialize skipped, Notification impl required */
@@ -560,19 +668,40 @@ external sequenceEqual: observable('a) => operatorFunction('a, bool) =
 external multicast: (unit => subject('a)) => operatorFunction('a, 'a) =
   "multicast";
 
-// TODO possibly not type safe
 [@bs.module "rxjs/operators"]
 external multicast2:
-  (unit => subject('a), observable('a) => observable('b)) =>
-  operatorFunction('a, 'b) =
+  (unit => subject('a), observable('a) => observable('r)) =>
+  operatorFunction('a, 'r) =
   "multicast";
 
 [@bs.module "rxjs/operators"]
 external share: unit => operatorFunction('a, 'a) = "share";
 
+// begin shareReplay
+module ShareReplayConfig = {
+  type t;
+  [@bs.obj]
+  external make:
+    (
+      ~bufferSize: int,
+      ~windowTime: float,
+      ~refCount: bool,
+      ~scheduler: scheduler,
+      unit
+    ) =>
+    t =
+    "";
+};
+
 [@bs.module "rxjs/operators"]
 external shareReplay3:
   (~bufferSize: int, ~windowTime: float, scheduler) =>
+  operatorFunction('a, 'a) =
+  "shareReplay";
+
+[@bs.module "rxjs/operators"]
+external shareReplay3C:
+  (ShareReplayConfig.t, ~windowTime: float, scheduler) =>
   operatorFunction('a, 'a) =
   "shareReplay";
 
@@ -582,45 +711,43 @@ external shareReplay2:
   "shareReplay";
 
 [@bs.module "rxjs/operators"]
+external shareReplay2C:
+  (ShareReplayConfig.t, ~windowTime: float) => operatorFunction('a, 'a) =
+  "shareReplay";
+
+[@bs.module "rxjs/operators"]
 external shareReplay1: (~bufferSize: int) => operatorFunction('a, 'a) =
   "shareReplay";
 
 [@bs.module "rxjs/operators"]
 external shareReplay: unit => operatorFunction('a, 'a) = "shareReplay";
 
-// todo bs.obj or remove
-//[@bs.module "rxjs/operators"]
-//external shareReplayC:
-//  {
-//    .
-//    "bufferSize": int,
-//    "windowTime": float,
-//    "refCount": bool,
-//    "scheduler": scheduler,
-//  } =>
-//  operatorFunction('a, 'a) =
-//  "shareReplay";
+[@bs.module "rxjs/operators"]
+external shareReplay1C: ShareReplayConfig.t => operatorFunction('a, 'a) =
+  "shareReplay";
+
+// end of shareReplay
 
 [@bs.module "rxjs/operators"]
 external publish:
-  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  unit => unaryFunction(observable('a), connectableObservable('a)) =
   "publish";
 
-// todo recheck
-// TODO 3rd override?
 [@bs.module "rxjs/operators"]
-external publishS: operatorFunction('a, 'b) => operatorFunction('a, 'b) =
+external publish1: operatorFunction('a, 'b) => operatorFunction('a, 'b) =
   "publish";
 
 [@bs.module "rxjs/operators"]
 external publishBehavior:
-  'a => unaryFunction(observable('a), connectable_observable('a)) =
+  'a => unaryFunction(observable('a), connectableObservable('a)) =
   "publishBehavior";
 
 [@bs.module "rxjs/operators"]
 external publishLast:
-  unit => unaryFunction(observable('a), connectable_observable('a)) =
+  unit => unaryFunction(observable('a), connectableObservable('a)) =
   "publishLast";
+
+// begin publishReplay
 
 [@bs.module "rxjs/operators"]
 external publishReplay3S:
@@ -643,8 +770,8 @@ external publishReplay: unit => operatorFunction('a, 'a) = "publishReplay";
 [@bs.module "rxjs/operators"]
 external publishReplay4:
   (
-    ~bufferSize: int=?,
-    ~windowTime: float=?,
+    ~bufferSize: int,
+    ~windowTime: float,
     operatorFunction('a, 'b),
     scheduler
   ) =>
@@ -653,9 +780,11 @@ external publishReplay4:
 
 [@bs.module "rxjs/operators"]
 external publishReplay3:
-  (~bufferSize: int=?, ~windowTime: float=?, operatorFunction('a, 'b)) =>
+  (~bufferSize: int, ~windowTime: float, operatorFunction('a, 'b)) =>
   operatorFunction('a, 'b) =
   "publishReplay";
+
+// end of publishReplay
 
 /* 'b not used */
 [@bs.module "rxjs/operators"]
@@ -672,7 +801,6 @@ external auditTime: float => operatorFunction('a, 'a) = "auditTime";
 external auditTime2: (float, RxJs_Scheduler.t) => operatorFunction('a, 'a) =
   "auditTime";
 
-// TODO types OK?
 [@bs.module "rxjs/operators"]
 external exhaust: unit => operatorFunction(observable('a), 'a) = "exhaust";
 
@@ -704,7 +832,6 @@ external exhaustMapi:
   (('a, int) => observable('b)) => operatorFunction('a, 'c) =
   "exhaustMap";
 
-// TODO check if returns nulls on errors
 [@bs.module "rxjs/operators"]
 external elementAt2: (int, ~defaultValue: 'a) => operatorFunction('a, 'a) =
   "elementAt";
@@ -712,10 +839,12 @@ external elementAt2: (int, ~defaultValue: 'a) => operatorFunction('a, 'a) =
 [@bs.module "rxjs/operators"]
 external elementAt: int => operatorFunction('a, 'a) = "elementAt";
 
+// BS docs: Never, EVER, annotate a value coming from JS as option('a). Always give the concrete, non-polymorphic type.
+// 😬
+
 [@bs.module "rxjs/operators"]
 external find: ('a => bool) => operatorFunction('a, option('a)) = "find";
 
-// todo i?
 [@bs.module "rxjs/operators"]
 external findi:
   (('a, int, observable('a)) => bool) => operatorFunction('a, option('a)) =
@@ -724,7 +853,6 @@ external findi:
 [@bs.module "rxjs/operators"]
 external findIndex: ('a => bool) => operatorFunction('a, int) = "findIndex";
 
-// todo i?
 [@bs.module "rxjs/operators"]
 external findIndexi:
   (('a, int, observable('a)) => bool) => operatorFunction('a, int) =
@@ -755,7 +883,7 @@ external onErrorResumeNext:
 
 [@bs.module "rxjs/operators"]
 external refCount:
-  unit => unaryFunction(connectable_observable('a), observable('a)) =
+  unit => unaryFunction(connectableObservable('a), observable('a)) =
   "refCount";
 
 [@bs.module "rxjs/operators"]

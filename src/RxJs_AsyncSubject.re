@@ -1,10 +1,10 @@
 open RxJs__;
 
-type t('a) = async_subject('a);
+type t('a) = asyncSubject('a);
 
 include MakeSubject({
-  type t('a) = async_subject('a);
+  type t('a) = asyncSubject('a);
 });
 
 [@bs.module "rxjs"] [@bs.new]
-external make: unit => async_subject('a) = "AsyncSubject";
+external make: unit => asyncSubject('a) = "AsyncSubject";

@@ -1,12 +1,12 @@
 open RxJs__;
 
-type t('a) = behavior_subject('a);
+type t('a) = behaviorSubject('a);
 
 include (module type of
   MakeSubject({
-    type t('a) = behavior_subject('a);
+    type t('a) = behaviorSubject('a);
   }));
 
-let make: 'a => behavior_subject('a);
+let make: 'a => behaviorSubject('a);
 
-[@bs.send] external getValue: behavior_subject('a) => 'a = "getValue";
+[@bs.send] external getValue: behaviorSubject('a) => 'a = "getValue";

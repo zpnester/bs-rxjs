@@ -2,8 +2,6 @@ type t = RxJs__.scheduler;
 
 [@bs.send] external now: t => float = "now";
 
-// todo test
-
 [@bs.send]
 external schedule3:
   (t, option('state) => unit, ~delay: float, ~state: option('state)) =>

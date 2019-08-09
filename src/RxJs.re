@@ -179,7 +179,6 @@ external combineLatest3S:
   observable(('a, 'b, 'c)) =
   "combineLatest";
 
-// scheduler cannot be added here as optional, fails at runtime
 [@bs.module "rxjs"]
 external combineLatest3R:
   (observable('a), observable('b), observable('c), ('a, 'b, 'c) => 'r) =>
@@ -216,7 +215,6 @@ external combineLatest4S:
   observable(('a, 'b, 'c, 'd)) =
   "combineLatest";
 
-// scheduler cannot be added here as optional, fails at runtime
 [@bs.module "rxjs"]
 external combineLatest4R:
   (
@@ -352,23 +350,13 @@ external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
 
 [@bs.module "rxjs"]
 external iif:
-  (
-    unit => bool,
-    ~trueResult: observable('a)=?,
-    ~falseResult: observable('a)=?,
-    unit
-  ) =>
+  (unit => bool, ~true_: observable('a), ~false_: observable('a)) =>
   observable('a) =
   "iif";
 
 [@bs.module "rxjs"]
 external iifP:
-  (
-    unit => bool,
-    ~trueResult: Js.Promise.t('a)=?,
-    ~falseResult: Js.Promise.t('a)=?,
-    unit
-  ) =>
+  (unit => bool, ~true_: Js.Promise.t('a), ~false_: Js.Promise.t('a)) =>
   observable('a) =
   "iif";
 

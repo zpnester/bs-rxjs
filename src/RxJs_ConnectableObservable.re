@@ -1,6 +1,6 @@
 open RxJs__;
 
-type t('a) = connectable_observable('a);
+type t('a) = connectableObservable('a);
 
 include MakeObservable({
   type nonrec t('a) = t('a);
@@ -15,7 +15,7 @@ include MakePipeable({
 external oAsJson__: observable('a) => Js.Json.t = "%identity";
 
 external mapOptionUnsafe__:
-  option(Js.Json.t) => option(connectable_observable('a)) =
+  option(Js.Json.t) => option(connectableObservable('a)) =
   "%identity";
 
 /* instanceof won't work, CO is O with connect method, not real instance of ConnectableObservable */
@@ -30,7 +30,7 @@ let asConnectableObservable_: Js.Json.t => option(Js.Json.t) = [%raw
 ];
 
 let asConnectableObservable:
-  observable('a) => option(connectable_observable('a)) =
+  observable('a) => option(connectableObservable('a)) =
   obs => asConnectableObservable_(oAsJson__(obs))->mapOptionUnsafe__;
 
 [@bs.send] external connect: t('a) => subscription = "connect";

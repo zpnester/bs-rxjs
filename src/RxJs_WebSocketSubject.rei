@@ -1,10 +1,10 @@
 open RxJs__;
 
-type t('a) = websocket_subject('a);
+type t('a) = websocketSubject('a);
 
 include (module type of
   MakeSubject({
-    type t('a) = websocket_subject('a);
+    type t('a) = websocketSubject('a);
   }));
 
-let make: (~url: string) => websocket_subject(Js.Json.t);
+let make: (~url: string) => websocketSubject(Js.Json.t);

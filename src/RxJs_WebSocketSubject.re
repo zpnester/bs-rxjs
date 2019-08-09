@@ -1,11 +1,11 @@
 open RxJs__;
 
-type t('a) = websocket_subject('a);
+type t('a) = websocketSubject('a);
 
 include MakeSubject({
-  type t('a) = websocket_subject('a);
+  type t('a) = websocketSubject('a);
 });
 
 [@bs.module "rxjs/webSocket"] [@bs.new]
-external make: (~url: string) => websocket_subject(Js.Json.t) =
+external make: (~url: string) => websocketSubject(Js.Json.t) =
   "WebSocketSubject";
