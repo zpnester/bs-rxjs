@@ -22,6 +22,7 @@ let observable =
       1000,
     )
     |> ignore;
+    None;
   });
 
 observable->Observable.subscribe(
