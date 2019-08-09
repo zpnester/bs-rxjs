@@ -7,5 +7,6 @@ include (module type of
     type t('a) = replay_subject('a);
   }));
 
-let make:
-  (~bufferSize: int=?, ~windowTime: int=?, unit) => replay_subject('a);
+let make2: (~bufferSize: int, ~windowTime: float) => replay_subject('a);
+
+let make: (~bufferSize: int) => replay_subject('a);

@@ -6,6 +6,8 @@ include MakeSubject({
 });
 
 [@bs.module "rxjs"] [@bs.new]
-external make:
-  (~bufferSize: int=?, ~windowTime: int=?, unit) => replay_subject('a) =
+external make2: (~bufferSize: int, ~windowTime: float) => replay_subject('a) =
   "ReplaySubject";
+
+[@bs.module "rxjs"] [@bs.new]
+external make: (~bufferSize: int) => replay_subject('a) = "ReplaySubject";

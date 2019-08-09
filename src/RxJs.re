@@ -29,12 +29,12 @@ external race: array(observable('a)) => observable('a) = "race";
 [@bs.module "rxjs"] external fromArray: array('a) => observable('a) = "from";
 
 [@bs.module "rxjs"]
-external fromArrayS: (array('a), scheduler) => observable('a) = "from";
+external fromArray2: (array('a), scheduler) => observable('a) = "from";
 
 [@bs.module "rxjs"]
 external fromPromise: Js.Promise.t('a) => observable('a) = "from";
 [@bs.module "rxjs"]
-external fromPromiseS: (Js.Promise.t('a), scheduler) => observable('a) =
+external fromPromise2: (Js.Promise.t('a), scheduler) => observable('a) =
   "from";
 
 /* emit string as a sequence */
@@ -42,14 +42,14 @@ external fromPromiseS: (Js.Promise.t('a), scheduler) => observable('a) =
 external fromString: string => observable(string) = "from";
 
 [@bs.module "rxjs"]
-external fromStringS: (string, scheduler) => observable(string) = "from";
+external fromString2: (string, scheduler) => observable(string) = "from";
 
 /* empty is deprecated in favor of using EMPTY constant */
 [@bs.module "rxjs"] external empty: observable('a) = "EMPTY";
 [@bs.module "rxjs"] external never: observable('a) = "NEVER";
 [@bs.module "rxjs"] external interval: float => observable(int) = "interval";
 [@bs.module "rxjs"]
-external intervalS: (float, scheduler) => observable(int) = "interval";
+external interval2: (float, scheduler) => observable(int) = "interval";
 
 [@bs.module "rxjs"]
 external zip2: (observable('a), observable('b)) => observable(('a, 'b)) =
@@ -93,22 +93,50 @@ external zip4R:
 [@bs.module "rxjs"] [@bs.variadic]
 external zip: array(observable('a)) => observable(array('a)) = "zip";
 
+// begin timer
+[@bs.module "rxjs"] external timer: unit => observable(int) = "timer";
+
+// float timer
+
 [@bs.module "rxjs"]
-external timer:
-  (
-    ~dueTime: [@bs.unwrap] [ | `Number(float) | `Date(Js.Date.t)]=?,
-    ~period: float=?,
-    ~scheduler: scheduler=?,
-    unit
-  ) =>
-  observable(int) =
+external timer3: (float, ~period: float, scheduler) => observable(int) =
   "timer";
 
 [@bs.module "rxjs"]
-external range:
-  (~start: int=?, ~count: int=?, ~scheduler: scheduler=?, unit) =>
-  observable(int) =
+external timer2: (float, ~period: float) => observable(int) = "timer";
+
+[@bs.module "rxjs"]
+external timer2S: (float, scheduler) => observable(int) = "timer";
+
+[@bs.module "rxjs"] external timer1: float => observable(int) = "timer";
+
+// date timer
+
+[@bs.module "rxjs"]
+external timerD3: (Js.Date.t, ~period: float, scheduler) => observable(int) =
+  "timer";
+
+[@bs.module "rxjs"]
+external timerD2: (Js.Date.t, ~period: float) => observable(int) = "timer";
+
+[@bs.module "rxjs"]
+external timerD2S: (Js.Date.t, scheduler) => observable(int) = "timer";
+
+[@bs.module "rxjs"] external timerD1: Js.Date.t => observable(int) = "timer";
+
+// end of timer
+
+[@bs.module "rxjs"]
+external range3: (~start: int, ~count: int, scheduler) => observable(int) =
   "range";
+
+[@bs.module "rxjs"]
+external range2: (~start: int, ~count: int) => observable(int) = "range";
+
+[@bs.module "rxjs"]
+external range1: (~start: int) => observable(int) = "range";
+
+[@bs.module "rxjs"] external range: unit => observable(int) = "range";
 
 [@bs.module "rxjs"]
 external fromEvent: (Dom.eventTarget, string) => observable(Dom.event) =
@@ -128,7 +156,6 @@ external combineLatest2S:
   (observable('a), observable('b), scheduler) => observable(('a, 'b)) =
   "combineLatest";
 
-// scheduler cannot be added here as optional, fails at runtime
 [@bs.module "rxjs"]
 external combineLatest2R:
   (observable('a), observable('b), ('a, 'b) => 'r) => observable('r) =
@@ -236,58 +263,89 @@ external forkJoin4:
   observable(('a, 'b, 'c, 'd)) =
   "forkJoin";
 
+// begin merge
+
 [@bs.module "rxjs"] [@bs.variadic]
 external merge: array(observable('a)) => observable('a) = "merge";
 
 [@bs.module "rxjs"]
-external merge1:
-  (observable('a), ~concurrent: int=?, ~scheduler: scheduler=?, unit) =>
+external merge1CS: (observable('a), int, scheduler) => observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge1S: (observable('a), scheduler) => observable('a) = "merge";
+
+[@bs.module "rxjs"]
+external merge1: observable('a) => observable('a) = "merge";
+
+[@bs.module "rxjs"]
+external merge2CS:
+  (observable('a), observable('a), int, scheduler) => observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge2S:
+  (observable('a), observable('a), scheduler) => observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge2: (observable('a), observable('a)) => observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge3CS:
+  (observable('a), observable('a), observable('a), int, scheduler) =>
   observable('a) =
   "merge";
 
 [@bs.module "rxjs"]
-external merge2:
-  (
-    observable('a),
-    observable('a),
-    ~concurrent: int=?,
-    ~scheduler: scheduler=?,
-    unit
-  ) =>
+external merge3S:
+  (observable('a), observable('a), observable('a), scheduler) =>
   observable('a) =
   "merge";
 
 [@bs.module "rxjs"]
 external merge3:
+  (observable('a), observable('a), observable('a)) => observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge4CS:
   (
     observable('a),
     observable('a),
     observable('a),
-    ~concurrent: int=?,
-    ~scheduler: scheduler=?,
-    unit
+    observable('a),
+    int,
+    scheduler
+  ) =>
+  observable('a) =
+  "merge";
+
+[@bs.module "rxjs"]
+external merge4S:
+  (
+    observable('a),
+    observable('a),
+    observable('a),
+    observable('a),
+    scheduler
   ) =>
   observable('a) =
   "merge";
 
 [@bs.module "rxjs"]
 external merge4:
-  (
-    observable('a),
-    observable('a),
-    observable('a),
-    observable('a),
-    ~concurrent: int=?,
-    ~scheduler: scheduler=?,
-    unit
-  ) =>
+  (observable('a), observable('a), observable('a), observable('a)) =>
   observable('a) =
   "merge";
+
+// end of merge
 
 [@bs.module "rxjs"] external throwError: 'e => observable('a) = "throwError";
 
 [@bs.module "rxjs"]
-external throwErrorS: ('e, scheduler) => observable('a) = "throwError";
+external throwError2: ('e, scheduler) => observable('a) = "throwError";
 
 [@bs.send]
 external toPromise: observable('a) => Js.Promise.t('a) = "toPromise";
@@ -357,6 +415,6 @@ external concat4S:
 external pairs: Js.t({..}) => Observable.t((string, Js.Json.t)) = "pairs";
 
 [@bs.module "rxjs"]
-external pairsS:
+external pairs2:
   (Js.t({..}), scheduler) => Observable.t((string, Js.Json.t)) =
   "pairs";

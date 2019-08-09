@@ -17,20 +17,15 @@ external mapOptionUnsafe__: option(Js.Json.t) => option(subject('a)) =
 
 [@bs.val] [@bs.module "rxjs"] external subjectCtor: Js.Json.t = "Subject";
 
-let asSubject_: (Js.Json.t, Js.Json.t) => Js.Nullable.t(Js.Json.t) = [%raw
+let asSubject_: (Js.Json.t, Js.Json.t) => option(Js.Json.t) = [%raw
   {|
   function(o, c) {
     if (o instanceof c) {
       return o;
-    } else {
-      return null;
     }
   }
   |}
 ];
 
 let asSubject: observable('a) => option(subject('a)) =
-  obs =>
-    asSubject_(observableToJson__(obs), subjectCtor)
-    ->Js.Nullable.toOption
-    ->mapOptionUnsafe__;
+  obs => asSubject_(observableToJson__(obs), subjectCtor)->mapOptionUnsafe__;

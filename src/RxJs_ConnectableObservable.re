@@ -19,13 +19,11 @@ external mapOptionUnsafe__:
   "%identity";
 
 /* instanceof won't work, CO is O with connect method, not real instance of ConnectableObservable */
-let asConnectableObservable_: Js.Json.t => Js.Nullable.t(Js.Json.t) = [%raw
+let asConnectableObservable_: Js.Json.t => option(Js.Json.t) = [%raw
   {|
   function(o) {
     if (o.connect && o.getSubject) {
       return o;
-    } else {
-      return null;
     }
   }
   |}
@@ -33,9 +31,6 @@ let asConnectableObservable_: Js.Json.t => Js.Nullable.t(Js.Json.t) = [%raw
 
 let asConnectableObservable:
   observable('a) => option(connectable_observable('a)) =
-  obs =>
-    asConnectableObservable_(oAsJson__(obs))
-    ->Js.Nullable.toOption
-    ->mapOptionUnsafe__;
+  obs => asConnectableObservable_(oAsJson__(obs))->mapOptionUnsafe__;
 
 [@bs.send] external connect: t('a) => subscription = "connect";
