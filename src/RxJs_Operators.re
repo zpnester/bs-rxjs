@@ -834,8 +834,7 @@ external exhaustMapi:
   "exhaustMap";
 
 [@bs.module "rxjs/operators"]
-external elementAt2: (int, ~defaultValue: 'a) => operatorFunction('a, 'a) =
-  "elementAt";
+external elementAt2: (int, 'a) => operatorFunction('a, 'a) = "elementAt";
 
 [@bs.module "rxjs/operators"]
 external elementAt: int => operatorFunction('a, 'a) = "elementAt";

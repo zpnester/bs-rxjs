@@ -215,7 +215,7 @@ o1
 ->pipe1(first1(x => x == 5))
 ->subscribe(
     ~next=x => expectToEqual(x, 6),
-    ~error=e => (),
+    ~error=_ => (),
     //    failwith("should fail")
     (),
   );
@@ -1313,7 +1313,7 @@ of2("a", "b")
   );
 
 of2("a", "b")
-->pipe1(elementAt2(2, ~defaultValue="y"))
+->pipe1(elementAt2(2, "y"))
 ->subscribe(~next=x => expectToEqual(x, "y"), ());
 
 of2("b", "c")
