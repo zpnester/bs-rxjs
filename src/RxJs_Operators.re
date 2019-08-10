@@ -159,7 +159,7 @@ external catchError:
   "catchError";
 
 [@bs.module "rxjs/operators"]
-external retry1: (~count: int) => operatorFunction('a, 'a) = "retry";
+external retry1: int => operatorFunction('a, 'a) = "retry";
 
 [@bs.module "rxjs/operators"]
 external retry: unit => operatorFunction('a, 'a) = "retry";
@@ -313,7 +313,8 @@ external buffer: observable('b) => operatorFunction('a, array('a)) =
 
 [@bs.module "rxjs/operators"]
 external bufferCount2:
-  (int, ~startBufferEvery: float) => operatorFunction('a, array('a)) =
+  (~bufferSize: int, ~startBufferEvery: float) =>
+  operatorFunction('a, array('a)) =
   "bufferCount";
 
 [@bs.module "rxjs/operators"]
@@ -324,7 +325,7 @@ external bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
 [@bs.module "rxjs/operators"]
 external bufferTime4:
   (
-    float,
+    ~bufferTimeSpan: float,
     ~bufferCreationInterval: option(float),
     ~maxBufferSize: int,
     RxJs_Scheduler.t
@@ -334,20 +335,29 @@ external bufferTime4:
 
 [@bs.module "rxjs/operators"]
 external bufferTime3:
-  (float, ~bufferCreationInterval: option(float), ~maxBufferSize: int) =>
+  (
+    ~bufferTimeSpan: float,
+    ~bufferCreationInterval: option(float),
+    ~maxBufferSize: int
+  ) =>
   operatorFunction('a, array('a)) =
   "bufferTime";
 
 [@bs.module "rxjs/operators"]
 external bufferTime3S:
-  (float, ~bufferCreationInterval: option(float), scheduler) =>
+  (
+    ~bufferTimeSpan: float,
+    ~bufferCreationInterval: option(float),
+    scheduler
+  ) =>
   operatorFunction('a, array('a)) =
   "bufferTime";
 
 // keep bufferCreationInterval non option here but not in others
 [@bs.module "rxjs/operators"]
 external bufferTime2:
-  (float, ~bufferCreationInterval: float) => operatorFunction('a, array('a)) =
+  (~bufferTimeSpan: float, ~bufferCreationInterval: float) =>
+  operatorFunction('a, array('a)) =
   "bufferTime";
 
 [@bs.module "rxjs/operators"]
@@ -558,7 +568,8 @@ external window: observable('b) => operatorFunction('a, observable('a)) =
 
 [@bs.module "rxjs/operators"]
 external windowCount2:
-  (int, ~startWindowEvery: int) => operatorFunction('a, observable('a)) =
+  (~windowSize: int, ~startWindowEvery: int) =>
+  operatorFunction('a, observable('a)) =
   "windowCount";
 
 [@bs.module "rxjs/operators"]
@@ -933,8 +944,6 @@ external distinctUntilChanged: unit => operatorFunction('a, 'a) =
 
 [@bs.module "rxjs/operators"]
 external observeOn: scheduler => operatorFunction('a, 'a) = "observeOn";
-
-// keep name withDelay
 
 [@bs.module "rxjs/operators"]
 external observeOn2: (scheduler, ~delay: float) => operatorFunction('a, 'a) =

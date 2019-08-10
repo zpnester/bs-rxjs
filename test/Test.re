@@ -171,8 +171,7 @@ o1
 ->pipe1(every(x => x mod 2 == 0))
 ->subscribe(~next=x => expectToEqual(x, false), ());
 
-let o1 =
-  concat([|of1("a"), throwError("oops")|])->pipe1(retry1(~count=3));
+let o1 = concat([|of1("a"), throwError("oops")|])->pipe1(retry1(3));
 o1->subscribe(
   ~next=x => Js.log(x),
   ~error=e => expectToEqual(e, Js.Json.string("oops")),
@@ -1052,7 +1051,7 @@ interval(220.0)
 interval(220.0)
 ->pipe2(
     bufferTime4(
-      1000.0,
+      ~bufferTimeSpan=1000.0,
       ~bufferCreationInterval=Some(500.0),
       ~maxBufferSize=2,
       queueScheduler,
@@ -1209,7 +1208,7 @@ o1
 
 let o1 = interval(50.0);
 o1
-->pipe2(windowCount2(5, ~startWindowEvery=2), take(10))
+->pipe2(windowCount2(~windowSize=5, ~startWindowEvery=2), take(10))
 ->subscribe(
     ~next=
       o =>
