@@ -680,13 +680,14 @@ external share: unit => operatorFunction('a, 'a) = "share";
 // begin shareReplay
 module ShareReplayConfig = {
   type t;
+
   [@bs.obj]
   external make:
     (
-      ~bufferSize: int,
-      ~windowTime: float,
-      ~refCount: bool,
-      ~scheduler: scheduler,
+      ~bufferSize: int=?,
+      ~windowTime: float=?,
+      ~refCount: bool=?,
+      ~scheduler: scheduler=?,
       unit
     ) =>
     t =
