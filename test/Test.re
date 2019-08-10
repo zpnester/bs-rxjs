@@ -4,6 +4,7 @@ open Js.Promise;
 open Operators;
 open Observer;
 open Expect_;
+open Belt;
 
 let of1 = a => of_([|a|]);
 let of2 = (a, b) => of_([|a, b|]);
@@ -1710,3 +1711,12 @@ let o1 = of1(1);
 
 let a = o1->pipe3(_ => "5", x => x->int_of_string, x => x + x);
 expectToEqual(a, 10);
+
+let o1 = of1(10)->Subject.asSubject;
+expectToEqual(o1->Option.isSome, false);
+
+let o1: option(Subject.t(int)) =
+  ReplaySubject.make(~bufferSize=1)
+  ->ReplaySubject.asObservable
+  ->Subject.asSubject;
+expectToEqual(o1->Option.isSome, true);
