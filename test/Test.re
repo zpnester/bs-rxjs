@@ -1720,3 +1720,10 @@ let o1: option(Subject.t(int)) =
   ->ReplaySubject.asObservable
   ->Subject.asSubject;
 expectToEqual(o1->Option.isSome, true);
+
+let f1 = (_, _, x, _) => x * 3;
+
+let o1 = fromArray([|5|]);
+o1
+->pipe1(mapi(f1(false, false)))
+->subscribe(~next=x => expectToEqual(x, 15), ());
