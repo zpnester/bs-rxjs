@@ -12,10 +12,11 @@
     "url": "https://github.com/zpnester/bs-rxjs.git"
   },
   "scripts": {
-    "bsb:clean": "bsb -clean-world",
-    "bsb:build": "bsb -make-world",
-    "bsb:watch": "bsb -make-world -w",
-    "test": "node test/Test.bs.js"
+    "bsc": "bsb -clean-world",
+    "bsb": "bsb -make-world",
+    "bsw": "bsb -make-world -w",
+    "test_": "node test/Test.bs.js",
+    "test": "npm run bsb && npm run test_"
   },
   "dependencies": {
     "rxjs": "^6.5.2"
