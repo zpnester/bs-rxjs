@@ -9,10 +9,10 @@ module.exports = {
   mode,
   target: "node",
   // target: "web",
-  entry: "./test/Test.bs.js",
+  entry: "./test/BundleTest.bs.js",
   output: {
     path: buildRoot,
-    filename: "test.js"
+    filename: "bundle.js"
   },
   plugins: [],
   devtool: "none"

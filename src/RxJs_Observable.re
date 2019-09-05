@@ -32,6 +32,6 @@ let subscribe =
 [@bs.send]
 external subscribeO: (t('a), observer('a)) => subscription = "subscribe";
 
-[@bs.module "rxjs"] [@bs.scope "Observable"]
+[@bs.module "rxjs/_esm2015"] [@bs.scope "Observable"]
 external make: (observer('a) => option(unit => unit)) => observable('a) =
   "create";

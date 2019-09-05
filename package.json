@@ -15,10 +15,13 @@
     "bsc": "bsb -clean-world",
     "bsb": "bsb -make-world",
     "bsw": "bsb -make-world -w",
-    "test_": "node test/Test.bs.js",
-    "test": "npm run bsb && npm run test_",
+    "test_": "node build/test.js",
+    "test:bundle": "node build/bundle.js",
+    "test": "npm run bsb & npm run wb && npm run test_ && npm run wb:bundle:prod && npm run test:bundle",
     "wb": "webpack",
     "wb:prod": "webpack -p",
+    "wb:bundle": "webpack --config webpack.2.config.js",
+    "wb:bundle:prod": "webpack -p --config webpack.2.config.js",
     "ww": "webpack w"
   },
   "dependencies": {

@@ -6,11 +6,11 @@ type t = subscription;
 
 [@bs.get] external closed: t => bool = "closed";
 
-[@bs.module "rxjs"] [@bs.scope "Subscription"] external empty: t = "EMPTY";
+[@bs.module "rxjs/_esm2015"] [@bs.scope "Subscription"] external empty: t = "EMPTY";
 
-[@bs.new] [@bs.module "rxjs"] external make: unit => t = "Subscription";
+[@bs.new] [@bs.module "rxjs/_esm2015"] external make: unit => t = "Subscription";
 
-[@bs.new] [@bs.module "rxjs"]
+[@bs.new] [@bs.module "rxjs/_esm2015"]
 external make1: (unit => unit) => t = "Subscription";
 
 [@bs.send] external add: (t, t) => t = "add";

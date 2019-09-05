@@ -6,7 +6,7 @@ type t = subscription;
 
 [@bs.get] external closed: t => bool = "closed";
 
-[@bs.module "rxjs"] [@bs.scope "Subscription"] external empty: t = "EMPTY";
+[@bs.module "rxjs/_esm2015"] [@bs.scope "Subscription"] external empty: t = "EMPTY";
 
 // no external
 let make: unit => t;
