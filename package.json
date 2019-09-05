@@ -1,7 +1,7 @@
 {
   "name": "@zpnester/bs-rxjs",
   "description": "RxJS v6 bindings for BuckleScript",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": {
     "name": "Andriy Nesterenko",
     "email": "zpnester@gmail.com",
@@ -16,7 +16,10 @@
     "bsb": "bsb -make-world",
     "bsw": "bsb -make-world -w",
     "test_": "node test/Test.bs.js",
-    "test": "npm run bsb && npm run test_"
+    "test": "npm run bsb && npm run test_",
+    "wb": "webpack",
+    "wb:prod": "webpack -p",
+    "ww": "webpack w"
   },
   "dependencies": {
     "rxjs": "^6.5.2"
@@ -24,7 +27,9 @@
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^5.0.4",
-    "expect": "^24.0.0"
+    "expect": "^24.0.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.7"
   },
   "keywords": [
     "BuckleScript",

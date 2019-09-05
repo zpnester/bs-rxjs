@@ -1629,16 +1629,16 @@ expectToEqual(s2->Subscription.closed, false);
 let tearedDown = ref(false);
 let tearedDown2 = ref(false);
 
-let s4 = Subscription.makeU(() => tearedDown2 := true);
+let s4 = Subscription.make1(() => tearedDown2 := true);
 
-let s1 = Subscription.makeU(() => Js.log("sub unsub"));
+let s1 = Subscription.make1(() => Js.log("sub unsub"));
 let s3 = s1->add(s2);
 expectToBe(s2, s3);
 
 s1->add(s4);
 s1->remove(s4);
 
-s1->addT(() => tearedDown := true);
+s1->add1(() => tearedDown := true);
 
 expectToEqual(s1->Subscription.closed, false);
 s1->Subscription.unsubscribe;

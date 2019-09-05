@@ -26,9 +26,9 @@ lib/bs
 .bsb.lock
 
 .idea
-/lib
+lib
+build
 node_modules
 *.bs.js
 
 /test
-package-lock.json
