@@ -32,3 +32,6 @@ node_modules
 *.bs.js
 
 /test
+webpack.config.js
+webpack.2.config.js
+.travis.yml
