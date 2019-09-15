@@ -1599,19 +1599,35 @@ combineLatest3(o1, o2, o3)
 
 open Scheduler;
 
-asyncScheduler->schedule(state => {
-  expectToEqual(state, None);
-  Js.log("scheduled");
-});
+let isSubscription: RxJs_Subscription.t => bool = [%raw {|
+function(s) {
+    return s && typeof s.closed === "boolean";
+}
+|}];
+let expectSubscription = s => {
+    expectToEqual(s->isSubscription, true);
+};
 
-asyncScheduler->schedule3(
+let s1 = asyncScheduler->schedule(() => {
+  Js.log("scheduled");
+})
+|> expectSubscription;
+
+
+
+
+let s1 = asyncScheduler->schedule3(
   state => {
-    expectToEqualAny(state, "some");
+    expectToEqual(state, "some");
     Js.log("scheduled 2");
   },
-  ~delay=100.0,
-  ~state=Some("some"),
+  ~delay=500.0,
+  "some",
 );
+
+s1->expectSubscription;
+expectToEqual(s1->Subscription.closed, false);
+
 
 // s1->Subscription.unsubscribe;
 
@@ -1623,15 +1639,15 @@ let s1 = Subscription.empty;
 expectToEqual(s1->Subscription.closed, true);
 s1->Subscription.unsubscribe;
 
-let s2 = Subscription.make();
+let s2 = Subscription.make0();
 expectToEqual(s2->Subscription.closed, false);
 
 let tearedDown = ref(false);
 let tearedDown2 = ref(false);
 
-let s4 = Subscription.make1(() => tearedDown2 := true);
+let s4 = Subscription.make(() => tearedDown2 := true);
 
-let s1 = Subscription.make1(() => Js.log("sub unsub"));
+let s1 = Subscription.make(() => Js.log("sub unsub"));
 let s3 = s1->add(s2);
 expectToBe(s2, s3);
 
@@ -1648,18 +1664,24 @@ expectToEqual(tearedDown2^, false);
 expectToEqual(s2->Subscription.closed, true);
 
 let b1 = ref(false);
-queueScheduler->schedule(_ => b1 := true);
+queueScheduler->schedule(_ => {
+    b1 := true
+});
 expectToEqual(b1^, true);
 
 // queue with delay == async
 let b1 = ref(false);
-queueScheduler->schedule2(_ => b1 := true, ~delay=10.0);
+queueScheduler->schedule2(_ => {
+    b1 := true
+}, ~delay=10.0);
 
 expectToEqual(b1^, false);
 
 // asap is async
 let b1 = ref(false);
-asapScheduler->schedule2(_ => b1 := true, ~delay=0.0);
+asapScheduler->schedule2(_ => {
+    b1 := true
+}, ~delay=0.0);
 
 Js.Global.setTimeout(() => expectToEqual(b1^, true), 100);
 

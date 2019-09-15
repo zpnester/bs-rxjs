@@ -4,15 +4,15 @@ type t = RxJs__.scheduler;
 
 [@bs.send]
 external schedule3:
-  (t, option('state) => unit, ~delay: float, ~state: option('state)) =>
+  (t, 'state => unit, ~delay: float, 'state) =>
   RxJs__.subscription =
   "schedule";
 
 [@bs.send]
 external schedule2:
-  (t, option('state) => unit, ~delay: float) => RxJs__.subscription =
+  (t, unit => unit, ~delay: float) => RxJs__.subscription =
   "schedule";
 
 [@bs.send]
-external schedule: (t, option('state) => unit) => RxJs__.subscription =
+external schedule: (t, unit => unit) => RxJs__.subscription =
   "schedule";

@@ -8,10 +8,10 @@ type t = subscription;
 
 [@bs.module "rxjs/_esm2015"] [@bs.scope "Subscription"] external empty: t = "EMPTY";
 
-[@bs.new] [@bs.module "rxjs/_esm2015"] external make: unit => t = "Subscription";
+[@bs.new] [@bs.module "rxjs/_esm2015"] external make0: unit => t = "Subscription";
 
 [@bs.new] [@bs.module "rxjs/_esm2015"]
-external make1: (unit => unit) => t = "Subscription";
+external make: (unit => unit) => t = "Subscription";
 
 [@bs.send] external add: (t, t) => t = "add";
 [@bs.send] external add1: (t, unit => unit) => t = "add";
