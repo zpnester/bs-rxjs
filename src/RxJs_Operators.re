@@ -316,13 +316,13 @@ external buffer: observable('b) => operatorFunction('a, array('a)) =
 // array
 
 [@bs.module "rxjs/_esm2015/operators"]
-external bufferCountA2:
+external bufferCount_:
   (~bufferSize: int, ~startBufferEvery: float) =>
   operatorFunction('a, array('a)) =
   "bufferCount";
 
 [@bs.module "rxjs/_esm2015/operators"]
-external bufferCountA: int => operatorFunction('a, array('a)) = "bufferCount";
+external bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
 
 // tuple
 

@@ -194,7 +194,7 @@ o1
   );
 
 range2(~start=100, ~count=30)
-->pipe2(bufferCountA(7), first1D([||]))
+->pipe2(bufferCount(7), first1D([||]))
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|100, 101, 102, 103, 104, 105, 106|]),
     (),
@@ -221,7 +221,7 @@ range2(~start=100, ~count=30)
   );
 
 range2(~start=100, ~count=30)
-->pipe3(bufferCountA(1), take(2), toArray())
+->pipe3(bufferCount(1), take(2), toArray())
 ->subscribe(
     ~next=arr => expectToEqual(arr,
         [|
