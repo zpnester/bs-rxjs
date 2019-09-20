@@ -194,9 +194,39 @@ o1
   );
 
 range2(~start=100, ~count=30)
-->pipe2(bufferCount(7), first1D([||]))
+->pipe2(bufferCountA(7), first1D([||]))
 ->subscribe(
     ~next=arr => expectToEqual(arr, [|100, 101, 102, 103, 104, 105, 106|]),
+    (),
+  );
+
+range2(~start=100, ~count=30)
+->pipe3(bufferCount2, take(5), toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr,
+        [|
+        (100, 101), (102, 103), (104, 105), (106, 107), (108, 109)
+        |]),
+    (),
+  );
+
+range2(~start=100, ~count=30)
+->pipe3(bufferCount3, take(2), toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr,
+        [|
+        (100, 101, 102), (103, 104, 105)
+        |]),
+    (),
+  );
+
+range2(~start=100, ~count=30)
+->pipe3(bufferCountA(1), take(2), toArray())
+->subscribe(
+    ~next=arr => expectToEqual(arr,
+        [|
+        [|100|], [|101|]
+        |]),
     (),
   );
 

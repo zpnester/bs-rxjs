@@ -311,14 +311,59 @@ external throttleTime: float => operatorFunction('a, 'a) = "throttleTime";
 external buffer: observable('b) => operatorFunction('a, array('a)) =
   "buffer";
 
+// begin bufferCount
+
+// array
+
 [@bs.module "rxjs/_esm2015/operators"]
-external bufferCount2:
+external bufferCountA2:
   (~bufferSize: int, ~startBufferEvery: float) =>
   operatorFunction('a, array('a)) =
   "bufferCount";
 
 [@bs.module "rxjs/_esm2015/operators"]
-external bufferCount: int => operatorFunction('a, array('a)) = "bufferCount";
+external bufferCountA: int => operatorFunction('a, array('a)) = "bufferCount";
+
+// tuple
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount2:
+  ([@bs.as {json|2|json}] _) =>
+  operatorFunction('a, ('a, 'a)) =
+  "bufferCount";
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount2_:
+  ([@bs.as {json|2|json}] _, ~startBufferEvery: float) =>
+  operatorFunction('a, ('a, 'a)) =
+  "bufferCount";
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount3:
+  ([@bs.as {json|3|json}] _) =>
+  operatorFunction('a, ('a, 'a, 'a)) =
+  "bufferCount";
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount3_:
+  ([@bs.as {json|3|json}] _, ~startBufferEvery: float) =>
+  operatorFunction('a, ('a, 'a, 'a)) =
+  "bufferCount";
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount4:
+  ([@bs.as {json|4|json}] _) =>
+  operatorFunction('a, ('a, 'a, 'a, 'a)) =
+  "bufferCount";
+
+
+[@bs.module "rxjs/_esm2015/operators"]
+external bufferCount4_:
+  ([@bs.as {json|4|json}] _, ~startBufferEvery: float) =>
+  operatorFunction('a, ('a, 'a, 'a, 'a)) =
+  "bufferCount";
+
+// end bufferCount
 
 // begin bufferTime
 

@@ -1,7 +1,7 @@
 {
   "name": "@zpnester/bs-rxjs",
   "description": "RxJS v6 bindings for BuckleScript",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Andriy Nesterenko",
     "email": "zpnester@gmail.com",
@@ -17,8 +17,8 @@
     "bsw": "bsb -make-world -w",
     "test_": "node build/test.js",
     "test:bundle": "node build/bundle.js",
-    "test": "npm run bsb & npm run wb && npm run test_ && npm run wb:bundle:prod && npm run test:bundle",
-    "test__": "npm run bsb & npm run wb && npm run test_",
+    "test": "npm run bsb && npm run wb && npm run test_ && npm run wb:bundle:prod && npm run test:bundle",
+    "test__": "npm run bsb && npm run wb && npm run test_",
     "wb": "webpack",
     "wb:prod": "webpack -p",
     "wb:bundle": "webpack --config webpack.2.config.js",
